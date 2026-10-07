@@ -118,7 +118,6 @@ See [MONGODB_SETUP.md](./MONGODB_SETUP.md) for database and deployment notes. In
 ```text
 backend/       Flask API, career features, interview engine, and services
 frontend/      Static web pages and browser-side JavaScript
-uploads/       Runtime storage for uploaded and generated files
 .env.example   Environment-variable template
 MONGODB_SETUP.md
                Database and deployment guidance
