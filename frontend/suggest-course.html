@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#eef3ef">
+    <title>Suggest a Course - Career Copilot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #1d3029;
+            --muted: #62726a;
+            --line: #d9e2dc;
+            --paper: #fff;
+            --canvas: #eef3ef;
+            --green: #245b47;
+            --green-dark: #173e31;
+            --blue: #2867c7;
+            --coral: #bf6247;
+            --error: #a53a36;
+            --shadow: 0 18px 55px rgba(31, 57, 45, .08);
+        }
+        * { box-sizing: border-box; }
+        body {
+            min-width: 320px;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--ink);
+            background:
+                radial-gradient(ellipse at 7% 0%, rgba(206, 224, 212, .72), transparent 34rem),
+                linear-gradient(135deg, #f4f7f4, var(--canvas));
+            font-family: "DM Sans", sans-serif;
+        }
+        button, input { font: inherit; }
+        button { cursor: pointer; }
+        .shell { width: min(1420px, calc(100% - 48px)); margin: 0 auto; }
+        .topbar { height: 74px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(29, 48, 41, .12); }
+        .brand { display: flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; }
+        .brand-mark { width: 36px; height: 36px; display: grid; place-items: center; color: #fff; background: var(--green); border-radius: 8px; font: 800 14px "Manrope", sans-serif; }
+        .brand-name { display: block; font: 800 12px "Manrope", sans-serif; }
+        .brand-sub { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; }
+        .top-actions { display: flex; align-items: center; gap: 18px; }
+        .module-tag { color: var(--green); font-size: 11px; font-weight: 700; }
+        .back-link { color: var(--ink); text-decoration: none; font-size: 12px; font-weight: 600; }
+        .back-link:hover { color: var(--green); }
+        main { padding: 34px 0 56px; }
+        .intro { margin-bottom: 22px; }
+        .eyebrow { margin: 0 0 9px; color: var(--coral); font-size: 10px; font-weight: 700; letter-spacing: 1px; }
+        h1 { margin: 0; font: 800 34px/1.12 "Manrope", sans-serif; letter-spacing: 0; }
+        .intro-copy { max-width: 730px; margin: 10px 0 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+        .workspace { display: grid; grid-template-columns: minmax(250px, 310px) minmax(0, 1fr); align-items: start; gap: 18px; }
+        .panel { min-width: 0; overflow: hidden; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); }
+        .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 17px 18px; border-bottom: 1px solid var(--line); }
+        .panel-head h2 { margin: 0; font: 700 14px "Manrope", sans-serif; }
+        .panel-head p { margin: 5px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+        .form-body { padding: 18px; }
+        label { display: block; margin: 0 0 6px; font-size: 11px; font-weight: 700; }
+        input { width: 100%; height: 42px; padding: 0 11px; color: var(--ink); background: #fbfcfb; border: 1px solid #d6dfd9; border-radius: 5px; outline: none; font-size: 12px; }
+        input:focus { border-color: #57836f; box-shadow: 0 0 0 3px rgba(36, 91, 71, .1); }
+        input::placeholder { color: #9aa59e; }
+        .form-note { margin: 11px 0 17px; color: var(--muted); font-size: 10px; line-height: 1.55; }
+        .primary-button { width: 100%; min-height: 42px; padding: 0 14px; color: #fff; background: var(--green); border: 1px solid var(--green); border-radius: 5px; font-size: 12px; font-weight: 700; }
+        .primary-button:hover:not(:disabled) { background: var(--green-dark); }
+        .primary-button:disabled { cursor: wait; opacity: .62; }
+        .form-status { min-height: 20px; margin: 12px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+        .form-status.error { color: var(--error); }
+        .output-panel { min-height: 620px; }
+        .output-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; padding: 19px 22px; border-bottom: 1px solid var(--line); }
+        .output-head h2 { margin: 0; font: 700 15px "Manrope", sans-serif; }
+        .output-head p { margin: 6px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+        .step-count { flex: none; padding: 6px 8px; color: var(--green); background: #edf5ef; border-radius: 4px; font-size: 10px; font-weight: 700; }
+        .empty-state { display: grid; min-height: 500px; place-content: center; padding: 32px; text-align: center; }
+        .empty-mark { width: 48px; height: 48px; display: grid; place-items: center; margin: 0 auto 13px; color: var(--green); background: #edf5ef; border-radius: 12px; font: 800 20px "Manrope", sans-serif; }
+        .empty-state h3 { margin: 0; font: 700 15px "Manrope", sans-serif; }
+        .empty-state p { max-width: 370px; margin: 7px auto 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+        .plan-summary { display: none; padding: 20px 22px 4px; }
+        .plan-summary.visible { display: block; }
+        .plan-role { margin: 0; font: 700 19px "Manrope", sans-serif; }
+        .plan-overview { max-width: 850px; margin: 6px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+        .flow { display: none; margin: 0; padding: 22px 22px 28px; list-style: none; counter-reset: course-step; }
+        .flow.visible { display: block; }
+        .flow-step { position: relative; display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 13px; padding-bottom: 20px; counter-increment: course-step; }
+        .flow-step:not(:last-child)::after { position: absolute; top: 43px; bottom: 0; left: 20px; width: 2px; content: ""; background: #cbded0; }
+        .step-node { position: relative; z-index: 1; width: 42px; height: 42px; display: grid; place-items: center; color: #fff; background: var(--green); border: 4px solid #e5f0e8; border-radius: 50%; font: 700 12px "Manrope", sans-serif; }
+        .step-card { min-width: 0; padding: 16px 17px; background: #fbfcfb; border: 1px solid var(--line); border-radius: 7px; }
+        .step-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+        .step-title { margin: 0; font: 700 14px/1.35 "Manrope", sans-serif; }
+        .step-goal { margin: 6px 0 13px; color: var(--muted); font-size: 11px; line-height: 1.55; }
+        .step-detail { margin: 10px 0 0; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+        .step-detail strong { color: #334c3e; }
+        .topic-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 9px 0 0; padding: 0; list-style: none; }
+        .topic-list li { padding: 5px 8px; color: #315443; background: #edf5ef; border: 1px solid #dbe9de; border-radius: 4px; font-size: 10px; }
+        .resources { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+        .resource-link { display: inline-flex; min-height: 34px; align-items: center; gap: 7px; padding: 0 10px; color: var(--green); background: #fff; border: 1px solid #cadbce; border-radius: 5px; font-size: 10px; font-weight: 700; text-decoration: none; }
+        .resource-link:hover { background: #edf5ef; border-color: #8ca899; }
+        .resource-link .resource-source { color: #77857c; font-size: 9px; font-weight: 500; }
+        .resource-link:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+        .flow[aria-busy="true"] { opacity: .55; }
+        @media (max-width: 780px) {
+            .workspace { grid-template-columns: minmax(0, 1fr); }
+            .output-panel { min-height: 420px; }
+            .empty-state { min-height: 320px; }
+        }
+        @media (max-width: 560px) {
+            .shell { width: min(100% - 28px, 1420px); }
+            .topbar { height: 64px; }
+            .top-actions { gap: 10px; }
+            .module-tag { display: none; }
+            main { padding-top: 24px; }
+            h1 { font-size: 29px; }
+            .output-head, .plan-summary { padding-left: 16px; padding-right: 16px; }
+            .flow { padding: 18px 12px 24px; }
+            .flow-step { grid-template-columns: 36px minmax(0, 1fr); gap: 8px; }
+            .flow-step:not(:last-child)::after { left: 17px; }
+            .step-node { width: 36px; height: 36px; }
+            .step-card { padding: 13px 12px; }
+            .step-title { font-size: 13px; }
+            .resource-link { min-height: 36px; }
+        }
+    </style>
+    <script src="config.js"></script>
+</head>
+<body>
+    <header class="topbar shell">
+        <a class="brand" href="dashboard.html" aria-label="Career Copilot dashboard">
+            <span class="brand-mark">CC</span>
+            <span><span class="brand-name">CAREER COPILOT</span><span class="brand-sub">CAREER DEVELOPMENT WORKSPACE</span></span>
+        </a>
+        <div class="top-actions">
+            <span class="module-tag">MODULE 07</span>
+            <a class="back-link" href="dashboard.html">Dashboard</a>
+        </div>
+    </header>
+
+    <main class="shell">
+        <section class="intro">
+            <p class="eyebrow">MODULE 07 / COURSE SUGGESTIONS</p>
+            <h1>Suggest a course for your target role.</h1>
+            <p class="intro-copy">Build a sequenced learning path with checkpoints and hands-on projects, then open video lessons and playlists for each stage.</p>
+        </section>
+
+        <div class="workspace">
+            <aside class="panel" aria-labelledby="roleFormTitle">
+                <div class="panel-head">
+                    <div><h2 id="roleFormTitle">Target job role</h2><p>Start with the role you want to prepare for.</p></div>
+                </div>
+                <form class="form-body" id="courseForm">
+                    <label for="targetRole">Job title</label>
+                    <input id="targetRole" name="target_role" required maxlength="160" autocomplete="organization-title" placeholder="e.g. Data Analyst">
+                    <p class="form-note">The plan is sequenced from foundations through practical work. Your latest resume skills are used when available.</p>
+                    <button class="primary-button" id="buildButton" type="submit">Build learning path</button>
+                    <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+                </form>
+            </aside>
+
+            <section class="panel output-panel" aria-labelledby="planTitle">
+                <div class="output-head">
+                    <div><h2 id="planTitle">Learning flow</h2><p id="planSubhead">Your role-specific course stages will appear here.</p></div>
+                    <span class="step-count" id="stepCount" hidden></span>
+                </div>
+                <div class="empty-state" id="emptyState">
+                    <div>
+                        <div class="empty-mark" aria-hidden="true">07</div>
+                        <h3>Set a role to map your next steps</h3>
+                        <p>Each stage includes focused topics, a practice project, a completion checkpoint, and video and playlist suggestions.</p>
+                    </div>
+                </div>
+                <section class="plan-summary" id="planSummary" aria-live="polite">
+                    <h3 class="plan-role" id="planRole"></h3>
+                    <p class="plan-overview" id="planOverview"></p>
+                </section>
+                <ol class="flow" id="courseFlow" aria-label="Suggested course stages" aria-busy="false"></ol>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        const API_URL = window.CAREER_COPILOT_API_URL;
+        const TOKEN_STORAGE_KEY = "careerCopilotToken";
+        const courseForm = document.getElementById("courseForm");
+        const targetRoleInput = document.getElementById("targetRole");
+        const buildButton = document.getElementById("buildButton");
+        const formStatus = document.getElementById("formStatus");
+        const emptyState = document.getElementById("emptyState");
+        const planSummary = document.getElementById("planSummary");
+        const planRole = document.getElementById("planRole");
+        const planOverview = document.getElementById("planOverview");
+        const planSubhead = document.getElementById("planSubhead");
+        const stepCount = document.getElementById("stepCount");
+        const courseFlow = document.getElementById("courseFlow");
+
+        function clearAuthAndRedirect() {
+            localStorage.removeItem("careerCopilotUser");
+            localStorage.removeItem(TOKEN_STORAGE_KEY);
+            localStorage.removeItem("careerCopilotLoggedIn");
+            window.location.replace("index.html");
+        }
+
+        function makeText(tag, className, text) {
+            const element = document.createElement(tag);
+            if (className) element.className = className;
+            element.textContent = String(text || "");
+            return element;
+        }
+
+        function createResourceLink(resource, label) {
+            if (!resource || typeof resource.url !== "string") return null;
+            let url;
+            try {
+                url = new URL(resource.url);
+            } catch (_) {
+                return null;
+            }
+            if (url.protocol !== "https:" || !["youtube.com", "www.youtube.com", "youtu.be"].includes(url.hostname)) return null;
+
+            const link = document.createElement("a");
+            link.className = "resource-link";
+            link.href = url.href;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.append(makeText("span", "", label));
+            if (resource.channel) link.append(makeText("span", "resource-source", resource.channel));
+            return link;
+        }
+
+        function renderPlan(result) {
+            courseFlow.replaceChildren();
+            planRole.textContent = result.target_role ? `Learning path: ${result.target_role}` : "Suggested learning path";
+            planOverview.textContent = result.overview || "Work through each stage in order. Complete the checkpoint before moving to the next phase.";
+            planSubhead.textContent = "Follow the stages from foundations to role-ready practice.";
+            stepCount.textContent = `${result.phases.length} STAGES`;
+            stepCount.hidden = false;
+            emptyState.hidden = true;
+            planSummary.classList.add("visible");
+            courseFlow.classList.add("visible");
+
+            result.phases.forEach((phase, index) => {
+                const item = document.createElement("li");
+                item.className = "flow-step";
+                const node = makeText("span", "step-node", phase.step || index + 1);
+                node.setAttribute("aria-hidden", "true");
+                const card = document.createElement("article");
+                card.className = "step-card";
+                const heading = document.createElement("h3");
+                heading.className = "step-title";
+                heading.textContent = phase.title || `Stage ${index + 1}`;
+                card.append(heading);
+                card.append(makeText("p", "step-goal", phase.goal));
+
+                if (Array.isArray(phase.topics) && phase.topics.length) {
+                    const topics = document.createElement("ul");
+                    topics.className = "topic-list";
+                    topics.setAttribute("aria-label", "Topics covered");
+                    phase.topics.forEach(topic => topics.append(makeText("li", "", topic)));
+                    card.append(topics);
+                }
+
+                card.append(makeText("p", "step-detail", `Practice project: ${phase.project || "Apply the stage topics in a small project."}`));
+                card.append(makeText("p", "step-detail", `Checkpoint: ${phase.checkpoint || "Demonstrate the stage goal."}`));
+
+                const resources = document.createElement("div");
+                resources.className = "resources";
+                const video = createResourceLink(phase.video, "Video lesson");
+                const playlist = createResourceLink(phase.playlist, "Playlist");
+                if (video) resources.append(video);
+                if (playlist) resources.append(playlist);
+                if (resources.childElementCount) card.append(resources);
+
+                item.append(node, card);
+                courseFlow.append(item);
+            });
+        }
+
+        courseForm.addEventListener("submit", async event => {
+            event.preventDefault();
+            const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+            if (!token) {
+                clearAuthAndRedirect();
+                return;
+            }
+
+            const targetRole = targetRoleInput.value.trim();
+            if (!targetRole) {
+                formStatus.textContent = "Enter a target job role.";
+                formStatus.classList.add("error");
+                targetRoleInput.focus();
+                return;
+            }
+
+            buildButton.disabled = true;
+            buildButton.textContent = "Building learning path...";
+            formStatus.classList.remove("error");
+            formStatus.textContent = "Generating stages and finding resources...";
+            courseFlow.setAttribute("aria-busy", "true");
+
+            try {
+                const response = await fetch(`${API_URL}/api/courses/suggest`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ target_role: targetRole })
+                });
+                const result = await response.json();
+                if (response.status === 401) {
+                    clearAuthAndRedirect();
+                    return;
+                }
+                if (!response.ok || !result.success || !Array.isArray(result.phases)) {
+                    throw new Error(result.message || "Unable to build this course path.");
+                }
+                renderPlan(result);
+                formStatus.textContent = "Learning path ready. Open a video or playlist for each stage.";
+            } catch (error) {
+                formStatus.textContent = error.message || "Unable to reach the course planner.";
+                formStatus.classList.add("error");
+            } finally {
+                buildButton.disabled = false;
+                buildButton.textContent = "Build learning path";
+                courseFlow.setAttribute("aria-busy", "false");
+            }
+        });
+
+        if (!localStorage.getItem(TOKEN_STORAGE_KEY)) {
+            clearAuthAndRedirect();
+        }
+    </script>
+</body>
+</html>

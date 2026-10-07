@@ -1,0 +1,10 @@
+Flask
+flask-cors
+python-dotenv
+Werkzeug
+PyPDF2
+python-docx
+requests
+google-genai
+gunicorn
+pymongo

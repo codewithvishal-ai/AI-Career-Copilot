@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#eef3ef">
+    <title>Module 05 — AI Resume Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #1d3029;
+            --muted: #62726a;
+            --line: #d9e2dc;
+            --paper: #fff;
+            --canvas: #eef3ef;
+            --green: #245b47;
+            --green-dark: #173e31;
+            --resume-blue: #1a73e8;
+            --coral: #bf6247;
+            --error: #a53a36;
+            --shadow: 0 18px 55px rgba(31, 57, 45, .08);
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            min-width: 320px;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--ink);
+            background:
+                radial-gradient(ellipse at 8% 0%, rgba(206, 224, 212, .7), transparent 34rem),
+                linear-gradient(135deg, #f4f7f4, var(--canvas));
+            font-family: "DM Sans", sans-serif;
+        }
+        button, input, textarea { font: inherit; }
+        button { cursor: pointer; }
+        .shell { width: min(1440px, calc(100% - 56px)); margin: 0 auto; }
+        .topbar {
+            height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(29, 48, 41, .12);
+        }
+        .brand { display: flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; }
+        .brand-mark {
+            width: 36px; height: 36px; display: grid; place-items: center;
+            color: #fff; background: var(--green); border-radius: 8px;
+            font: 800 15px "Manrope", sans-serif;
+        }
+        .brand-name { font: 800 12px "Manrope", sans-serif; letter-spacing: 0; }
+        .brand-sub { margin-top: 2px; color: var(--muted); font-size: 10px; }
+        .top-actions { display: flex; align-items: center; gap: 18px; }
+        .module-tag { color: var(--green); font-size: 11px; font-weight: 700; }
+        .back-link { color: var(--ink); text-decoration: none; font-size: 12px; font-weight: 600; }
+        .back-link:hover { color: var(--green); }
+
+        main { padding: 38px 0 64px; }
+        .intro { margin-bottom: 26px; }
+        .eyebrow { margin: 0 0 10px; color: var(--coral); font-size: 10px; font-weight: 700; letter-spacing: 1.4px; }
+        h1 { margin: 0; font: 800 clamp(28px, 4vw, 42px)/1.1 "Manrope", sans-serif; letter-spacing: 0; }
+        .intro-copy { max-width: 680px; margin: 10px 0 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+        .workspace { display: grid; grid-template-columns: minmax(340px, .88fr) minmax(420px, 1.12fr); align-items: start; gap: 22px; }
+        .panel { min-width: 0; overflow: hidden; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); }
+        .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 20px 22px; border-bottom: 1px solid var(--line); }
+        .panel-head h2 { margin: 0; font: 700 15px "Manrope", sans-serif; }
+        .panel-head p { margin: 5px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+        .step-count { flex: none; padding: 6px 8px; color: var(--green); background: #edf5ef; border-radius: 4px; font-size: 10px; font-weight: 700; }
+        form { padding: 18px 22px 22px; }
+        .field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 12px; }
+        .field { min-width: 0; }
+        .field.full { grid-column: 1 / -1; }
+        label { display: block; margin: 0 0 6px; font-size: 11px; font-weight: 700; }
+        .optional { color: #89958e; font-weight: 400; }
+        input, textarea {
+            display: block; width: 100%; min-width: 0; padding: 10px 11px;
+            color: var(--ink); background: #fbfcfb; border: 1px solid #d6dfd9;
+            border-radius: 5px; outline: none; font-size: 12px;
+            transition: border-color .15s ease, box-shadow .15s ease;
+        }
+        input { height: 39px; }
+        textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
+        textarea.tall { min-height: 132px; }
+        input:focus, textarea:focus { border-color: #57836f; box-shadow: 0 0 0 3px rgba(36, 91, 71, .1); }
+        input::placeholder, textarea::placeholder { color: #9aa59e; }
+        .form-note { margin: 14px 0 0; color: var(--muted); font-size: 10px; line-height: 1.55; }
+        .form-actions { display: flex; align-items: center; gap: 12px; margin-top: 17px; }
+        .primary-button {
+            min-height: 42px; padding: 0 16px; color: #fff; background: var(--green);
+            border: 1px solid var(--green); border-radius: 5px; font-size: 12px; font-weight: 700;
+            transition: background .15s ease, transform .15s ease;
+        }
+        .primary-button:hover:not(:disabled) { background: var(--green-dark); transform: translateY(-1px); }
+        .primary-button:disabled { cursor: wait; opacity: .65; }
+        .form-status { min-height: 16px; color: var(--muted); font-size: 11px; }
+        .form-status.error { color: var(--error); }
+
+        .output-panel { position: sticky; top: 18px; }
+        .output-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+        .icon-button {
+            width: 34px; height: 34px; display: grid; place-items: center; padding: 0;
+            color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 5px;
+        }
+        .icon-button:hover:not(:disabled) { color: var(--green); border-color: #8ca899; }
+        .icon-button:disabled { cursor: not-allowed; opacity: .4; }
+        .icon-button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+        .output-wrap { padding: 18px; background: #f1f3f4; overflow: auto; }
+        .output-hint { display: grid; min-height: 390px; place-items: center; padding: 30px; text-align: center; }
+        .output-hint-mark { width: 46px; height: 46px; display: grid; place-items: center; margin: 0 auto 14px; color: var(--green); background: #edf5ef; border-radius: 50%; }
+        .output-hint-mark svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+        .output-hint strong { display: block; font: 700 14px "Manrope", sans-serif; }
+        .output-hint p { max-width: 280px; margin: 7px auto 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+        .resume-paper {
+            width: min(100%, 8.5in); min-height: 11in; margin: 0 auto; padding: .55in .62in;
+            color: #202124; background: #fff; border: 1px solid #dfe3e7;
+            box-shadow: 0 5px 18px rgba(32, 33, 36, .1);
+            font: 10.5pt/1.42 Arial, Helvetica, sans-serif; overflow-wrap: anywhere;
+        }
+        .resume-paper[hidden], .output-hint[hidden] { display: none; }
+        .resume-paper:focus { outline: 2px solid rgba(26, 115, 232, .35); outline-offset: 2px; }
+        .resume-document-header { padding: 0 0 13px; text-align: center; border-bottom: 2px solid var(--resume-blue); }
+        .resume-name { margin: 0; color: #202124; font: 700 24pt/1.15 Arial, Helvetica, sans-serif; }
+        .resume-target { margin: 5px 0 0; color: #3c4043; font-size: 11pt; font-weight: 600; }
+        .resume-contact { margin: 6px 0 0; color: #5f6368; font-size: 9pt; line-height: 1.45; }
+        .resume-section { margin-top: 14px; }
+        .resume-section-title {
+            margin: 0 0 6px; padding-bottom: 3px; color: var(--resume-blue);
+            border-bottom: 1px solid #dadce0; font: 700 9.5pt/1.25 Arial, Helvetica, sans-serif;
+        }
+        .resume-section p { margin: 4px 0; }
+        .resume-entry-title { margin-top: 7px !important; font-weight: 700; }
+        .resume-section ul { margin: 4px 0 6px; padding-left: 18px; }
+        .resume-section li { margin: 2px 0; padding-left: 2px; }
+        .output-foot { display: flex; justify-content: space-between; gap: 12px; padding: 12px 22px; color: var(--muted); background: #f8faf8; border-top: 1px solid var(--line); font-size: 10px; }
+
+        @media (max-width: 900px) {
+            .workspace { grid-template-columns: minmax(0, 1fr); }
+            .output-panel { position: static; }
+        }
+        @media (max-width: 560px) {
+            .shell { width: min(100% - 28px, 1440px); }
+            .topbar { height: 64px; }
+            .top-actions { gap: 10px; }
+            .module-tag { display: none; }
+            main { padding-top: 28px; }
+            .panel-head, form, .output-wrap { padding-left: 16px; padding-right: 16px; }
+            .field-grid { grid-template-columns: 1fr; }
+            .field.full { grid-column: auto; }
+            .output-hint { min-height: 260px; }
+            .resume-paper { min-height: 0; padding: 24px 20px; font-size: 10pt; }
+            .resume-name { font-size: 22pt; }
+            .output-foot { padding-left: 16px; padding-right: 16px; }
+        }
+        @media print {
+            @page { size: letter; margin: .65in; }
+            body * { visibility: hidden !important; }
+            #resumePaper, #resumePaper * { visibility: visible !important; }
+            #resumePaper {
+                display: block; position: absolute; top: 0; left: 0; width: 7.2in;
+                min-height: 0; margin: 0; padding: 0; border: 0; box-shadow: none;
+                color: #202124; font-size: 9.5pt; line-height: 1.35;
+            }
+            #resumePaper .resume-section { break-inside: avoid; }
+        }
+    </style>
+<script src="config.js"></script>
+</head>
+<body>
+    <header class="topbar shell">
+        <a class="brand" href="dashboard.html" aria-label="Career Copilot dashboard">
+            <span class="brand-mark">CC</span>
+            <span><span class="brand-name">CAREER COPILOT</span><span class="brand-sub">CAREER DEVELOPMENT WORKSPACE</span></span>
+        </a>
+        <div class="top-actions">
+            <span class="module-tag">MODULE 05</span>
+            <a class="back-link" href="dashboard.html">Dashboard</a>
+        </div>
+    </header>
+
+    <main class="shell">
+        <section class="intro">
+            <p class="eyebrow">AI RESUME BUILDER</p>
+            <h1>Build a resume that sounds like you.</h1>
+            <p class="intro-copy">Share your real experience and goals. Gemini will shape your details into a clear, role-focused resume without adding credentials or results you did not provide.</p>
+        </section>
+
+        <div class="workspace">
+            <section class="panel" aria-labelledby="profileTitle">
+                <div class="panel-head">
+                    <div><h2 id="profileTitle">Your profile</h2><p>Specific details lead to a stronger, more credible resume.</p></div>
+                    <span class="step-count">01 / PROFILE</span>
+                </div>
+                <form id="resumeForm">
+                    <div class="field-grid">
+                        <div class="field"><label for="full_name">Full name *</label><input id="full_name" name="full_name" autocomplete="name" required maxlength="120" placeholder="Your name"></div>
+                        <div class="field"><label for="target_role">Target role *</label><input id="target_role" name="target_role" required maxlength="160" placeholder="e.g. Product Designer"></div>
+                        <div class="field"><label for="email">Email <span class="optional">(optional)</span></label><input id="email" name="email" type="email" autocomplete="email" maxlength="254" placeholder="name@example.com"></div>
+                        <div class="field"><label for="phone">Phone <span class="optional">(optional)</span></label><input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="80" placeholder="+1 555 010 2040"></div>
+                        <div class="field"><label for="location">Location <span class="optional">(optional)</span></label><input id="location" name="location" autocomplete="address-level2" maxlength="120" placeholder="City, Country"></div>
+                        <div class="field"><label for="linkedin">LinkedIn or portfolio <span class="optional">(optional)</span></label><input id="linkedin" name="linkedin" maxlength="300" placeholder="linkedin.com/in/you"></div>
+                        <div class="field full"><label for="summary">Profile or career goal <span class="optional">(optional)</span></label><textarea id="summary" name="summary" maxlength="3000" placeholder="What work do you do well? What kind of role are you pursuing?"></textarea></div>
+                        <div class="field full"><label for="experience">Experience <span class="optional">(optional if adding education or projects)</span></label><textarea class="tall" id="experience" name="experience" maxlength="12000" placeholder="For each role: title, employer, dates, responsibilities, and outcomes. Include only details you can stand behind."></textarea></div>
+                        <div class="field full"><label for="education">Education <span class="optional">(required if no experience or projects)</span></label><textarea id="education" name="education" maxlength="6000" placeholder="Degree or program, institution, dates, relevant coursework or honors."></textarea></div>
+                        <div class="field full"><label for="skills">Skills *</label><textarea id="skills" name="skills" maxlength="3000" placeholder="Tools, technologies, methods, and professional strengths you can demonstrate."></textarea></div>
+                        <div class="field full"><label for="projects">Projects <span class="optional">(optional)</span></label><textarea id="projects" name="projects" maxlength="8000" placeholder="Project name, what you built or contributed, technologies, and outcomes."></textarea></div>
+                        <div class="field full"><label for="certifications">Certifications <span class="optional">(optional)</span></label><textarea id="certifications" name="certifications" maxlength="3000" placeholder="Certification name, issuing organization, and date."></textarea></div>
+                    </div>
+                    <p class="form-note">Your profile is sent to the configured Gemini model to generate this resume. It is not saved by this feature. Add real details for at least one experience, education, or project; placeholder answers are rejected.</p>
+                    <div class="form-actions">
+                        <button class="primary-button" id="generateButton" type="submit">Generate resume</button>
+                        <span class="form-status" id="formStatus" role="status" aria-live="polite"></span>
+                    </div>
+                </form>
+            </section>
+
+            <section class="panel output-panel" aria-labelledby="outputTitle">
+                    <div class="panel-head">
+                    <div><h2 id="outputTitle">Professional resume</h2><p>Edit directly on the page before applying.</p></div>
+                    <div class="output-actions">
+                        <button class="icon-button" id="copyButton" type="button" title="Copy resume" aria-label="Copy resume" disabled>
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"></path></svg>
+                        </button>
+                        <button class="icon-button" id="printButton" type="button" title="Print or save as PDF" aria-label="Print or save as PDF" disabled>
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 8V3h10v5"></path><path d="M7 17H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><path d="M7 14h10v7H7z"></path><path d="M17 11h.01"></path></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="output-wrap">
+                    <div class="output-hint" id="outputHint">
+                        <div><span class="output-hint-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"></path><path d="M14 3v6h5M10 13h6M10 17h6"></path></svg></span><strong>Your draft will appear here</strong><p>Complete your profile and generate a resume to start reviewing.</p></div>
+                    </div>
+                    <article id="resumePaper" class="resume-paper" contenteditable="true" role="textbox" aria-label="Editable professional resume" aria-multiline="true" spellcheck="true" hidden></article>
+                </div>
+                <div class="output-foot"><span>LETTER SIZE · ATS-FRIENDLY</span><span id="wordCount">0 words</span></div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        const API_URL = window.CAREER_COPILOT_API_URL;
+        const TOKEN_STORAGE_KEY = "careerCopilotToken";
+        const form = document.getElementById("resumeForm");
+        const generateButton = document.getElementById("generateButton");
+        const formStatus = document.getElementById("formStatus");
+        const resumePaper = document.getElementById("resumePaper");
+        const outputHint = document.getElementById("outputHint");
+        const copyButton = document.getElementById("copyButton");
+        const printButton = document.getElementById("printButton");
+        const wordCount = document.getElementById("wordCount");
+
+        const sectionTitles = new Map([
+            ["PROFESSIONAL SUMMARY", "Professional Summary"],
+            ["SUMMARY", "Professional Summary"],
+            ["PROFILE", "Professional Summary"],
+            ["SKILLS", "Skills"],
+            ["CORE SKILLS", "Skills"],
+            ["TECHNICAL SKILLS", "Skills"],
+            ["PROFESSIONAL EXPERIENCE", "Professional Experience"],
+            ["WORK EXPERIENCE", "Professional Experience"],
+            ["EXPERIENCE", "Professional Experience"],
+            ["PROJECTS", "Projects"],
+            ["SELECTED PROJECTS", "Projects"],
+            ["EDUCATION", "Education"],
+            ["CERTIFICATIONS", "Certifications"],
+            ["CERTIFICATES", "Certifications"]
+        ]);
+
+        function cleanResumeLine(line) {
+            return line.trim()
+                .replace(/^#{1,6}\s*/, "")
+                .replace(/^\*\*(.*?)\*\*$/, "$1")
+                .replace(/^__(.*?)__$/, "$1")
+                .trim();
+        }
+
+        function matchSectionTitle(line) {
+            const key = cleanResumeLine(line).replace(/:$/, "").toUpperCase();
+            return sectionTitles.get(key) || null;
+        }
+
+        function addResumeSection(title, lines) {
+            const section = document.createElement("section");
+            section.className = "resume-section";
+            const heading = document.createElement("h2");
+            heading.className = "resume-section-title";
+            heading.textContent = title;
+            section.append(heading);
+
+            let list = null;
+            lines.forEach((line, index) => {
+                if (!line) {
+                    list = null;
+                    return;
+                }
+                const bullet = line.match(/^(?:[-*•▪◦]|\d+[.)])\s+(.*)$/);
+                if (bullet) {
+                    if (!list) {
+                        list = document.createElement("ul");
+                        section.append(list);
+                    }
+                    const item = document.createElement("li");
+                    item.textContent = bullet[1];
+                    list.append(item);
+                    return;
+                }
+
+                list = null;
+                const paragraph = document.createElement("p");
+                paragraph.textContent = line;
+                if (line.includes("|") || (index === 0 && /\b(19|20)\d{2}\b/.test(line))) {
+                    paragraph.className = "resume-entry-title";
+                }
+                section.append(paragraph);
+            });
+
+            resumePaper.append(section);
+        }
+
+        function renderResume(text) {
+            resumePaper.replaceChildren();
+            const lines = text.split(/\r?\n/).map(cleanResumeLine);
+            const firstLine = lines.findIndex(Boolean);
+            if (firstLine < 0) return;
+
+            const header = document.createElement("header");
+            header.className = "resume-document-header";
+            const name = document.createElement("h1");
+            name.className = "resume-name";
+            name.textContent = lines[firstLine];
+            header.append(name);
+
+            let cursor = firstLine + 1;
+            const headerLines = [];
+            while (cursor < lines.length && lines[cursor]) {
+                if (matchSectionTitle(lines[cursor])) break;
+                headerLines.push(lines[cursor]);
+                cursor += 1;
+            }
+            while (cursor < lines.length && !lines[cursor]) cursor += 1;
+
+            if (headerLines[0]) {
+                const target = document.createElement("p");
+                target.className = "resume-target";
+                target.textContent = headerLines[0];
+                header.append(target);
+            }
+            if (headerLines.length > 1) {
+                const contact = document.createElement("p");
+                contact.className = "resume-contact";
+                contact.textContent = headerLines.slice(1).join(" · ");
+                header.append(contact);
+            }
+            resumePaper.append(header);
+
+            const sections = [];
+            let current = null;
+            for (; cursor < lines.length; cursor += 1) {
+                const line = lines[cursor];
+                if (!line) {
+                    if (current && current.lines.length && current.lines.at(-1) !== "") {
+                        current.lines.push("");
+                    }
+                    continue;
+                }
+
+                const title = matchSectionTitle(line);
+                if (title) {
+                    if (current && current.lines.length) sections.push(current);
+                    current = { title, lines: [] };
+                } else {
+                    if (!current) current = { title: "Professional Summary", lines: [] };
+                    current.lines.push(line.replace(/\*\*/g, ""));
+                }
+            }
+            if (current && current.lines.length) sections.push(current);
+            sections.forEach(({ title, lines: sectionLines }) => addResumeSection(title, sectionLines));
+        }
+
+        function updateWordCount() {
+            const text = resumePaper.innerText.trim();
+            const words = text ? text.split(/\s+/).length : 0;
+            wordCount.textContent = `${words} ${words === 1 ? "word" : "words"}`;
+            copyButton.disabled = !text;
+            printButton.disabled = !text;
+        }
+
+        function updateOutput(text) {
+            renderResume(text);
+            const hasResume = Boolean(text.trim());
+            resumePaper.hidden = !hasResume;
+            outputHint.hidden = hasResume;
+            updateWordCount();
+        }
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+            if (!token) {
+                formStatus.textContent = "Please sign in from the dashboard before generating a resume.";
+                formStatus.classList.add("error");
+                return;
+            }
+
+            const profile = Object.fromEntries(new FormData(form).entries());
+            generateButton.disabled = true;
+            generateButton.textContent = "Generating...";
+            formStatus.textContent = "Creating your role-focused draft...";
+            formStatus.classList.remove("error");
+
+            try {
+                const response = await fetch(`${API_URL}/api/resume/generate`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(profile)
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || "Resume generation failed.");
+                }
+                updateOutput(result.resume || "");
+                formStatus.textContent = "Draft ready. Review every detail before applying.";
+            } catch (error) {
+                formStatus.textContent = error.message || "Unable to reach the resume service.";
+                formStatus.classList.add("error");
+            } finally {
+                generateButton.disabled = false;
+                generateButton.textContent = "Generate resume";
+            }
+        });
+
+        resumePaper.addEventListener("input", updateWordCount);
+
+        copyButton.addEventListener("click", async () => {
+            try {
+                await navigator.clipboard.writeText(resumePaper.innerText);
+                formStatus.classList.remove("error");
+                formStatus.textContent = "Resume copied to clipboard.";
+            } catch {
+                resumePaper.focus();
+                const range = document.createRange();
+                range.selectNodeContents(resumePaper);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+                formStatus.textContent = "Resume selected. Copy it to your clipboard.";
+            }
+        });
+
+        printButton.addEventListener("click", () => {
+            window.print();
+        });
+    </script>
+</body>
+</html>

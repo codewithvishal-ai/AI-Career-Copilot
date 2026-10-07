@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="AI Career Copilot - Your intelligent career companion"
+    >
+
+    <meta
+        name="theme-color"
+        content="#050611"
+    >
+
+    <title>AI Career Copilot</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+<script src="config.js"></script>
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         BACKGROUND
+    ====================================================== -->
+
+    <div class="background-grid"></div>
+
+    <div class="ambient ambient-one"></div>
+
+    <div class="ambient ambient-two"></div>
+
+    <div class="ambient ambient-three"></div>
+
+    <div id="particles"></div>
+
+
+
+    <!-- =====================================================
+         TOP NAVIGATION
+    ====================================================== -->
+
+    <header class="navbar">
+
+        <div class="brand">
+
+            <div class="brand-orb">
+
+                <span>✦</span>
+
+            </div>
+
+
+            <div class="brand-text">
+
+                <span class="brand-name">
+                    AI CAREER
+                </span>
+
+                <span class="brand-subtitle">
+                    COPILOT
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="system-status">
+
+            <span class="status-dot"></span>
+
+            <span>
+                SYSTEM ONLINE
+            </span>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         MAIN APPLICATION
+    ====================================================== -->
+
+    <main class="hero">
+
+
+        <!-- =================================================
+             LEFT SIDE - HERO
+        ================================================== -->
+
+        <section class="hero-content">
+
+
+            <div class="eyebrow">
+
+                <span class="eyebrow-line"></span>
+
+                INTELLIGENT CAREER SYSTEM
+
+            </div>
+
+
+            <h1>
+
+                Build Your
+
+                <span>
+                    Future.
+                </span>
+
+            </h1>
+
+
+            <p class="hero-description">
+
+                Your personal AI-powered career companion
+                designed to plan, analyze, track and
+                accelerate your professional journey.
+
+            </p>
+
+
+
+            <!-- =================================================
+                 AI TERMINAL
+            ================================================== -->
+
+            <div class="ai-terminal">
+
+
+                <div class="terminal-header">
+
+
+                    <div class="terminal-dots">
+
+                        <span></span>
+
+                        <span></span>
+
+                        <span></span>
+
+                    </div>
+
+
+                    <span>
+                        CAREER_COPILOT.exe
+                    </span>
+
+
+                    <span class="terminal-live">
+                        LIVE
+                    </span>
+
+                </div>
+
+
+                <div class="terminal-body">
+
+                    <div>
+
+                        <span class="terminal-prefix">
+                            AI&gt;
+                        </span>
+
+                        <span id="typingText"></span>
+
+                        <span class="cursor"></span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 FEATURE PILLS
+            ================================================== -->
+
+            <div class="feature-pills">
+
+
+                <div class="feature-pill">
+
+                    <span>◈</span>
+
+                    Career Roadmap
+
+                </div>
+
+
+                <div class="feature-pill">
+
+                    <span>◎</span>
+
+                    Resume Intelligence
+
+                </div>
+
+
+                <div class="feature-pill">
+
+                    <span>◇</span>
+
+                    AI Guidance
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             AI CORE
+        ================================================== -->
+
+        <section class="ai-core-section">
+
+
+            <div
+                class="core-orbit orbit-one"
+            ></div>
+
+
+            <div
+                class="core-orbit orbit-two"
+            ></div>
+
+
+            <div
+                class="core-orbit orbit-three"
+            ></div>
+
+
+
+            <div class="ai-core">
+
+
+                <div class="core-inner">
+
+
+                    <div class="core-symbol">
+                        AI
+                    </div>
+
+
+                    <div class="core-pulse"></div>
+
+                </div>
+
+            </div>
+
+
+            <div class="core-label">
+
+                <span class="label-line"></span>
+
+                CAREER INTELLIGENCE
+
+                <span class="label-line"></span>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             AUTH PANEL
+        ================================================== -->
+
+        <section class="auth-panel">
+
+
+            <div class="auth-glow"></div>
+
+
+
+            <!-- =================================================
+                 AUTH HEADER
+            ================================================== -->
+
+            <div class="auth-header">
+
+
+                <span class="auth-badge">
+                    SECURE ACCESS
+                </span>
+
+
+                <h2 id="authTitle">
+                    Welcome back.
+                </h2>
+
+
+                <p id="authSubtitle">
+                    Continue building your career.
+                </p>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 LOGIN FORM
+            ================================================== -->
+
+            <form
+                id="loginForm"
+                autocomplete="on"
+            >
+
+
+                <div class="input-group">
+
+
+                    <label for="username">
+                        USERNAME
+                    </label>
+
+
+                    <div class="input-wrapper">
+
+
+                        <span class="input-icon">
+                            ◉
+                        </span>
+
+
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="Enter username"
+                            autocomplete="username"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="input-group">
+
+
+                    <label for="password">
+                        PASSWORD
+                    </label>
+
+
+                    <div class="input-wrapper">
+
+
+                        <span class="input-icon">
+                            ◈
+                        </span>
+
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Enter password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            id="passwordToggle"
+                            aria-label="Show or hide password"
+                        >
+                            ◉
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     AUTH OPTIONS
+                ================================================== -->
+
+                <div class="auth-options">
+
+
+                    <label class="remember">
+
+                        <input
+                            type="checkbox"
+                            id="rememberMe"
+                        >
+
+                        <span>
+                            Remember me
+                        </span>
+
+                    </label>
+
+
+                    <a
+                        href="#"
+                        id="forgotPassword"
+                    >
+                        Forgot password?
+                    </a>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     LOGIN BUTTON
+                ================================================== -->
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="loginButton"
+                >
+
+                    <span>
+                        ENTER COPILOT
+                    </span>
+
+
+                    <span class="button-arrow">
+                        →
+                    </span>
+
+                </button>
+
+            </form>
+
+
+
+            <!-- =================================================
+                 REGISTER FORM
+            ================================================== -->
+
+            <form
+                id="registerForm"
+                class="hidden"
+                autocomplete="on"
+            >
+
+
+                <div class="input-group">
+
+
+                    <label for="registerUsername">
+                        USERNAME
+                    </label>
+
+
+                    <div class="input-wrapper">
+
+
+                        <span class="input-icon">
+                            ◉
+                        </span>
+
+
+                        <input
+                            type="text"
+                            id="registerUsername"
+                            name="registerUsername"
+                            placeholder="Create username"
+                            autocomplete="username"
+                            minlength="3"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="input-group">
+
+
+                    <label for="registerEmail">
+                        EMAIL
+                    </label>
+
+
+                    <div class="input-wrapper">
+
+
+                        <span class="input-icon">
+                            @
+                        </span>
+
+
+                        <input
+                            type="email"
+                            id="registerEmail"
+                            name="registerEmail"
+                            placeholder="Enter email"
+                            autocomplete="email"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="input-group">
+
+
+                    <label for="registerPassword">
+                        PASSWORD
+                    </label>
+
+
+                    <div class="input-wrapper">
+
+
+                        <span class="input-icon">
+                            ◈
+                        </span>
+
+
+                        <input
+                            type="password"
+                            id="registerPassword"
+                            name="registerPassword"
+                            placeholder="Create password"
+                            autocomplete="new-password"
+                            minlength="6"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="registerSubmitButton"
+                >
+
+                    <span>
+                        CREATE ACCOUNT
+                    </span>
+
+
+                    <span class="button-arrow">
+                        →
+                    </span>
+
+                </button>
+
+            </form>
+
+
+
+            <!-- =================================================
+                 DIVIDER
+            ================================================== -->
+
+            <div class="auth-divider">
+
+                <span>
+                    OR
+                </span>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 SWITCH LOGIN / REGISTER
+            ================================================== -->
+
+            <button
+                type="button"
+                class="secondary-button"
+                id="switchAuth"
+            >
+                Create new account
+            </button>
+
+
+
+            <!-- =================================================
+                 SECURITY NOTE
+            ================================================== -->
+
+            <div class="security-note">
+
+                <span>
+                    ⌁
+                </span>
+
+                <span>
+                    Your career data stays protected
+                    inside the Copilot system.
+                </span>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         SYSTEM BAR
+    ====================================================== -->
+
+    <footer class="system-bar">
+
+
+        <div>
+
+            <span class="bar-dot"></span>
+
+            AI ENGINE READY
+
+        </div>
+
+
+        <div>
+
+            CAREER OS v1.0
+
+        </div>
+
+
+        <div>
+
+            ENCRYPTED SESSION
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- =====================================================
+         SYSTEM MESSAGE
+    ====================================================== -->
+
+    <div
+        id="systemMessage"
+        class="system-message"
+        role="status"
+        aria-live="polite"
+    ></div>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="script.js?v=20260923"></script>
+
+</body>
+
+</html>

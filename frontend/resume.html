@@ -1,0 +1,6606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Career Copilot — Resume Intelligence</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* =========================================================
+           RESUME INTELLIGENCE UI
+        ========================================================= */
+
+        :root {
+            --resume-cyan: #55e7ff;
+            --resume-purple: #9b6cff;
+            --resume-green: #5dffae;
+            --resume-yellow: #ffd166;
+            --resume-red: #ff6b81;
+            --resume-text: #e7ecff;
+            --resume-muted: #7f89aa;
+            --resume-border: rgba(255,255,255,0.08);
+            --resume-panel: rgba(10,13,31,0.78);
+
+            /* Mouse-follow variables */
+            --mouse-x: 50%;
+            --mouse-y: 50%;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        .resume-page {
+            min-height: 100vh;
+            position: relative;
+            z-index: 5;
+        }
+
+        .resume-container {
+            width: min(1320px, 92%);
+            margin: auto;
+            padding: 30px 0 65px;
+        }
+
+        /* =========================================================
+           CODE 1 CURSOR GLOW
+        ========================================================= */
+
+        .cursor-glow {
+            position: fixed;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+            background: radial-gradient(
+                circle,
+                rgba(72,234,255,.08),
+                transparent 65%
+            );
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: opacity .3s ease;
+        }
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
+
+        .resume-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+
+        .resume-brand {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .resume-brand-icon {
+            width: 48px;
+            height: 48px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(85,231,255,0.55);
+            border-radius: 14px;
+            color: var(--resume-cyan);
+            font-size: 22px;
+            background: radial-gradient(
+                circle,
+                rgba(85,231,255,0.15),
+                transparent 70%
+            );
+            box-shadow: 0 0 30px rgba(85,231,255,0.13);
+            animation: resumeOrb 4s ease-in-out infinite;
+        }
+
+        @keyframes resumeOrb {
+            50% {
+                transform: translateY(-3px) rotate(4deg);
+            }
+        }
+
+        .resume-brand-name,
+        .resume-brand-subtitle,
+        .resume-system,
+        .resume-eyebrow,
+        .resume-panel-label,
+        .resume-section-title,
+        .score-label,
+        .mini-label,
+        .status-label,
+        .action-priority {
+            font-family: "Orbitron", sans-serif;
+        }
+
+        .resume-brand-name {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .resume-brand-subtitle {
+            margin-top: 5px;
+            color: var(--resume-cyan);
+            font-size: 8px;
+            letter-spacing: 3px;
+        }
+
+        .resume-system {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: #9da6c7;
+            font-size: 9px;
+            letter-spacing: 1.5px;
+        }
+
+        .resume-status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--resume-green);
+            box-shadow: 0 0 15px var(--resume-green);
+            animation: resumeStatusPulse 1.7s infinite;
+        }
+
+        @keyframes resumeStatusPulse {
+            50% {
+                opacity: 0.35;
+                transform: scale(0.7);
+            }
+        }
+
+        /* =========================================================
+           HERO
+        ========================================================= */
+
+        .resume-hero {
+            padding: 58px 0 30px;
+        }
+
+        .resume-eyebrow {
+            color: var(--resume-cyan);
+            font-size: 9px;
+            letter-spacing: 3px;
+            margin-bottom: 16px;
+        }
+
+        .resume-hero h1 {
+            margin: 0;
+            max-width: 900px;
+            font-size: clamp(42px, 6vw, 76px);
+            line-height: 1;
+            letter-spacing: -3px;
+            font-weight: 800;
+            background: linear-gradient(
+                100deg,
+                #fff,
+                var(--resume-cyan) 48%,
+                #a98cff
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .resume-description {
+            max-width: 760px;
+            margin-top: 20px;
+            color: #9199b8;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        /* =========================================================
+           MAIN GRID
+        ========================================================= */
+
+        .resume-main-grid {
+            display: grid;
+            grid-template-columns: 1.35fr 0.65fr;
+            gap: 22px;
+            margin-top: 20px;
+        }
+
+        /* =========================================================
+           GLASS PANELS + 3D SYSTEM
+        ========================================================= */
+
+        .resume-panel,
+        .resume-card {
+            position: relative;
+            border: 1px solid var(--resume-border);
+            border-radius: 24px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(25,28,65,0.86),
+                    rgba(7,10,28,0.94)
+                );
+            box-shadow:
+                0 25px 80px rgba(0,0,0,0.28),
+                inset 0 1px 0 rgba(255,255,255,0.04);
+
+            transform-style: preserve-3d;
+            will-change: transform;
+            transition:
+                transform 0.18s ease,
+                border-color 0.25s ease,
+                box-shadow 0.25s ease;
+            overflow: hidden;
+        }
+
+        /* Mouse light inside every interactive panel */
+
+        .resume-panel::after,
+        .resume-card::after {
+            content: "";
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            left: var(--card-mouse-x, 50%);
+            top: var(--card-mouse-y, 50%);
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: radial-gradient(
+                circle,
+                rgba(85,231,255,0.10),
+                rgba(155,108,255,0.055) 35%,
+                transparent 70%
+            );
+            filter: blur(25px);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .resume-panel:hover::after,
+        .resume-card:hover::after {
+            opacity: 1;
+        }
+
+        .resume-panel:hover,
+        .resume-card:hover {
+            border-color: rgba(85,231,255,0.22);
+            box-shadow:
+                0 30px 90px rgba(0,0,0,0.38),
+                0 0 35px rgba(85,231,255,0.055),
+                inset 0 1px 0 rgba(255,255,255,0.07);
+        }
+
+        /* =========================================================
+           UPLOAD PANEL
+        ========================================================= */
+
+        .resume-upload-panel {
+            padding: 30px;
+            min-height: 405px;
+            overflow: hidden;
+        }
+
+        .resume-upload-panel::before {
+            content: "";
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            right: -110px;
+            top: -120px;
+            border-radius: 50%;
+            background: var(--resume-cyan);
+            filter: blur(100px);
+            opacity: 0.08;
+            pointer-events: none;
+        }
+
+        .resume-panel-label,
+        .resume-section-title {
+            color: #68718f;
+            font-size: 8px;
+            letter-spacing: 2px;
+        }
+
+        .resume-panel-label {
+            margin-bottom: 20px;
+        }
+
+        .resume-drop-zone {
+            position: relative;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 28px;
+            border: 1px dashed rgba(85,231,255,0.32);
+            border-radius: 20px;
+            background: rgba(85,231,255,0.025);
+            cursor: pointer;
+            transition: 0.3s ease;
+            transform-style: preserve-3d;
+        }
+
+        .resume-drop-zone:hover,
+        .resume-drop-zone.dragover {
+            border-color: var(--resume-cyan);
+            background: rgba(85,231,255,0.07);
+            box-shadow:
+                inset 0 0 45px rgba(85,231,255,0.025),
+                0 0 30px rgba(85,231,255,0.06);
+        }
+
+        .resume-drop-zone.dragover {
+            transform: scale(1.01);
+        }
+
+        .resume-upload-icon {
+            width: 70px;
+            height: 70px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(85,231,255,0.3);
+            border-radius: 20px;
+            color: var(--resume-cyan);
+            font-size: 30px;
+            background: rgba(85,231,255,0.05);
+            box-shadow: 0 0 35px rgba(85,231,255,0.1);
+            margin-bottom: 18px;
+            transform: translateZ(25px);
+            transition: 0.3s ease;
+        }
+
+        .resume-drop-zone:hover .resume-upload-icon {
+            transform: translateZ(45px) rotateY(8deg) rotateX(-5deg);
+            box-shadow:
+                0 0 45px rgba(85,231,255,0.18),
+                0 0 80px rgba(155,108,255,0.08);
+        }
+
+        .resume-drop-zone h2 {
+            margin: 0 0 8px;
+            font-size: 21px;
+            transform: translateZ(18px);
+        }
+
+        .resume-drop-zone p {
+            max-width: 520px;
+            margin: 0;
+            color: #737c9a;
+            font-size: 12px;
+            line-height: 1.7;
+            transform: translateZ(12px);
+        }
+
+        .format-row {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-top: 14px;
+            transform: translateZ(15px);
+        }
+
+        .format-chip {
+            padding: 6px 9px;
+            border: 1px solid rgba(85,231,255,0.16);
+            border-radius: 8px;
+            color: #9fdfff;
+            background: rgba(85,231,255,0.035);
+            font-size: 8px;
+            letter-spacing: 0.8px;
+            transition: 0.25s ease;
+        }
+
+        .format-chip:hover {
+            transform: translateY(-3px);
+            border-color: rgba(85,231,255,0.5);
+            box-shadow: 0 8px 20px rgba(85,231,255,0.08);
+        }
+
+        .resume-upload-button,
+        .analyze-resume-button,
+        .secondary-button {
+            border-radius: 11px;
+            font-family: "Orbitron", sans-serif;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        .resume-upload-button {
+            margin-top: 19px;
+            padding: 12px 24px;
+            border: 1px solid rgba(85,231,255,0.35);
+            background: rgba(85,231,255,0.06);
+            color: var(--resume-cyan);
+            font-size: 8px;
+            transform: translateZ(25px);
+        }
+
+        .resume-upload-button:hover,
+        .secondary-button:hover {
+            background: rgba(85,231,255,0.12);
+            border-color: rgba(85,231,255,0.7);
+            transform: translateY(-3px) translateZ(25px);
+            box-shadow: 0 12px 30px rgba(85,231,255,0.08);
+        }
+
+        #resumeFile {
+            display: none;
+        }
+
+        .resume-file-info {
+            display: none;
+            margin-top: 16px;
+            padding: 13px 15px;
+            border: 1px solid rgba(93,255,174,0.2);
+            border-radius: 12px;
+            background: rgba(93,255,174,0.04);
+        }
+
+        .resume-file-info.show {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .resume-file-name {
+            color: #d9e5ff;
+            font-size: 11px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .resume-file-meta {
+            color: #75809f;
+            font-size: 9px;
+            white-space: nowrap;
+        }
+
+        .resume-file-status {
+            color: var(--resume-green);
+            font-family: "Orbitron", sans-serif;
+            font-size: 7px;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        .analyze-resume-button {
+            width: 100%;
+            height: 48px;
+            margin-top: 13px;
+            border: 1px solid rgba(85,231,255,0.35);
+            background: linear-gradient(
+                90deg,
+                rgba(53,217,255,0.08),
+                rgba(140,108,255,0.08)
+            );
+            color: var(--resume-cyan);
+            font-size: 8px;
+        }
+
+        .analyze-resume-button:hover:not(:disabled) {
+            border-color: rgba(85,231,255,0.7);
+            box-shadow: 0 0 30px rgba(85,231,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .analyze-resume-button:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        /* =========================================================
+           ENGINE PANEL
+        ========================================================= */
+
+        .resume-engine-panel {
+            padding: 30px;
+            border: 1px solid rgba(155,108,255,0.18);
+            border-radius: 24px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(35,22,70,0.85),
+                    rgba(8,10,28,0.94)
+                );
+        }
+
+        .resume-engine-title {
+            margin-bottom: 20px;
+            color: #707894;
+            font-family: "Orbitron", sans-serif;
+            font-size: 8px;
+            letter-spacing: 2px;
+        }
+
+        .engine-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            transition: 0.25s ease;
+        }
+
+        .engine-item:last-child {
+            border-bottom: none;
+        }
+
+        .engine-item:hover {
+            transform: translateX(5px);
+        }
+
+        .engine-icon {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 11px;
+            background: rgba(85,231,255,0.05);
+            border: 1px solid rgba(85,231,255,0.12);
+            flex: 0 0 auto;
+            transition: 0.25s ease;
+        }
+
+        .engine-item:hover .engine-icon {
+            transform: rotateY(15deg) translateZ(10px);
+            box-shadow: 0 0 20px rgba(85,231,255,0.08);
+        }
+
+        .engine-item strong {
+            display: block;
+            color: #fff;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .engine-item small {
+            color: #68718f;
+            font-size: 9px;
+        }
+
+        .engine-state {
+            margin-left: auto;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #68718f;
+            box-shadow: 0 0 10px transparent;
+        }
+
+        .engine-state.active {
+            background: var(--resume-cyan);
+            box-shadow: 0 0 12px var(--resume-cyan);
+        }
+
+        .engine-state.success {
+            background: var(--resume-green);
+            box-shadow: 0 0 12px var(--resume-green);
+        }
+
+        /* =========================================================
+           LOADING
+        ========================================================= */
+
+        .resume-loading {
+            display: none;
+            margin-top: 18px;
+            padding: 18px;
+            text-align: center;
+            color: #8d96b4;
+            font-family: "Orbitron", sans-serif;
+            font-size: 8px;
+            letter-spacing: 2px;
+            border: 1px solid rgba(85,231,255,0.12);
+            border-radius: 15px;
+            background: rgba(8,13,30,0.5);
+        }
+
+        .resume-loading.show {
+            display: block;
+        }
+
+        .loading-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            margin: 0 3px;
+            border-radius: 50%;
+            background: var(--resume-cyan);
+            animation: loadingPulse 1s infinite;
+        }
+
+        .loading-dot:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .loading-dot:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes loadingPulse {
+            50% {
+                opacity: 0.25;
+                transform: translateY(-4px);
+            }
+        }
+
+        /* =========================================================
+           RESULTS
+        ========================================================= */
+
+        .resume-results {
+            display: none;
+            margin-top: 48px;
+        }
+
+        .resume-results.show {
+            display: block;
+        }
+
+        .resume-section-title {
+            margin-bottom: 18px;
+            color: var(--resume-cyan);
+            font-size: 9px;
+            letter-spacing: 3px;
+        }
+
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px;
+        }
+
+        .score-card {
+            padding: 21px;
+            border: 1px solid rgba(85,231,255,0.13);
+            border-radius: 20px;
+            background: rgba(12,15,34,0.78);
+            min-height: 150px;
+            transform-style: preserve-3d;
+            transition: 0.25s ease;
+        }
+
+        .score-card:hover {
+            transform: translateY(-7px) translateZ(12px);
+            border-color: rgba(85,231,255,0.3);
+            box-shadow:
+                0 20px 45px rgba(0,0,0,0.3),
+                0 0 25px rgba(85,231,255,0.05);
+        }
+
+        .score-card.primary {
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(38,28,78,0.8),
+                    rgba(12,15,34,0.9)
+                );
+            border-color: rgba(155,108,255,0.25);
+        }
+
+        .score-label {
+            color: #68718f;
+            font-size: 7px;
+            letter-spacing: 1.6px;
+        }
+
+        .score-value {
+            margin-top: 10px;
+            font-size: 34px;
+            font-weight: 800;
+            color: var(--resume-cyan);
+            text-shadow: 0 0 25px rgba(85,231,255,0.2);
+            transform: translateZ(18px);
+        }
+
+        .score-card.primary .score-value {
+            color: #b89dff;
+        }
+
+        .score-subtitle {
+            margin-top: 3px;
+            color: #707894;
+            font-size: 9px;
+            line-height: 1.5;
+        }
+
+        .score-bar {
+            width: 100%;
+            height: 5px;
+            margin-top: 14px;
+            border-radius: 99px;
+            background: rgba(255,255,255,0.06);
+            overflow: hidden;
+        }
+
+        .score-bar-fill {
+            width: 0%;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(
+                90deg,
+                var(--resume-cyan),
+                var(--resume-purple)
+            );
+            transition: width 0.7s ease;
+        }
+
+        /* =========================================================
+           RESULT CARDS
+        ========================================================= */
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            margin-top: 18px;
+        }
+
+        .resume-card {
+            padding: 24px;
+            background: rgba(12,15,34,0.78);
+        }
+
+        .resume-card h3 {
+            margin: 0 0 17px;
+            color: #fff;
+            font-size: 15px;
+        }
+
+        .resume-card-wide {
+            grid-column: 1 / -1;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 11px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 10px;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #68718f;
+        }
+
+        .info-value {
+            color: #d8def2;
+            text-align: right;
+            word-break: break-word;
+        }
+
+        .info-value a {
+            color: var(--resume-cyan);
+            text-decoration: none;
+        }
+
+        .info-value a:hover {
+            text-decoration: underline;
+        }
+
+        .tags,
+        .keyword-columns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .skill-tag,
+        .keyword-tag {
+            padding: 7px 10px;
+            border: 1px solid rgba(85,231,255,0.16);
+            border-radius: 8px;
+            background: rgba(85,231,255,0.04);
+            color: #9fdfff;
+            font-size: 9px;
+            transition: 0.2s ease;
+        }
+
+        .skill-tag:hover,
+        .keyword-tag:hover {
+            transform: translateY(-2px) scale(1.03);
+            border-color: rgba(85,231,255,0.45);
+            box-shadow: 0 8px 18px rgba(85,231,255,0.06);
+        }
+
+        .keyword-tag.missing {
+            color: #ff9aaa;
+            border-color: rgba(255,107,129,0.16);
+            background: rgba(255,107,129,0.04);
+        }
+
+        .section-list {
+            display: grid;
+            gap: 9px;
+        }
+
+        .section-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: #aeb7d0;
+            font-size: 10px;
+        }
+
+        .section-item::before {
+            content: "✓";
+            color: var(--resume-green);
+        }
+
+        .health-list {
+            display: grid;
+            gap: 14px;
+        }
+
+        .health-row-head {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 9px;
+        }
+
+        .health-name {
+            color: #aeb7d0;
+        }
+
+        .health-score {
+            color: var(--resume-cyan);
+        }
+
+        .health-bar {
+            height: 7px;
+            border-radius: 99px;
+            overflow: hidden;
+            background: rgba(255,255,255,0.06);
+        }
+
+        .health-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: inherit;
+            background: linear-gradient(
+                90deg,
+                var(--resume-cyan),
+                var(--resume-purple)
+            );
+            transition: width .7s ease;
+        }
+
+        /* =========================================================
+           DIAGNOSTICS
+        ========================================================= */
+
+        .priority-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .issue-item,
+        .recommendation-item,
+        .action-item {
+            padding: 14px;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 13px;
+            background: rgba(255,255,255,0.02);
+            transition: 0.25s ease;
+        }
+
+        .issue-item:hover,
+        .recommendation-item:hover,
+        .action-item:hover {
+            transform: translateX(4px) translateY(-2px);
+            border-color: rgba(85,231,255,0.16);
+            background: rgba(85,231,255,0.025);
+        }
+
+        .issue-head,
+        .recommendation-head,
+        .action-head {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .issue-title,
+        .recommendation-title,
+        .action-title {
+            color: #e7ecff;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .issue-message,
+        .recommendation-description,
+        .action-details {
+            margin-top: 7px;
+            color: #7f89aa;
+            font-size: 10px;
+            line-height: 1.65;
+        }
+
+        .priority-badge {
+            padding: 4px 7px;
+            border-radius: 6px;
+            font-family: "Orbitron", sans-serif;
+            font-size: 6px;
+            letter-spacing: 0.7px;
+        }
+
+        .priority-high {
+            color: #ff9aaa;
+            background: rgba(255,107,129,0.1);
+            border: 1px solid rgba(255,107,129,0.2);
+        }
+
+        .priority-medium {
+            color: var(--resume-yellow);
+            background: rgba(255,209,102,0.08);
+            border: 1px solid rgba(255,209,102,0.16);
+        }
+
+        .priority-low {
+            color: var(--resume-green);
+            background: rgba(93,255,174,0.07);
+            border: 1px solid rgba(93,255,174,0.16);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 10px;
+        }
+
+        .stat-box {
+            padding: 14px;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 13px;
+            background: rgba(255,255,255,0.02);
+            transition: 0.25s ease;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-4px);
+            border-color: rgba(85,231,255,0.18);
+        }
+
+        .stat-value {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .stat-label {
+            margin-top: 4px;
+            color: #68718f;
+            font-size: 8px;
+        }
+
+        /* =========================================================
+           ADVANCED ANALYSIS
+        ========================================================= */
+
+        .diagnostic-grid {
+            display: grid;
+            grid-template-columns: repeat(2,1fr);
+            gap: 18px;
+            margin-top: 18px;
+        }
+
+        .diagnostic-list {
+            display: grid;
+            gap: 9px;
+        }
+
+        .diagnostic-item {
+            padding: 11px 13px;
+            border: 1px solid rgba(255,255,255,.06);
+            border-radius: 11px;
+            background: rgba(255,255,255,.02);
+            color: #aeb7d0;
+            font-size: 10px;
+            line-height: 1.55;
+            transition: 0.2s ease;
+        }
+
+        .diagnostic-item:hover {
+            transform: translateY(-2px);
+            border-color: rgba(85,231,255,.15);
+        }
+
+        .diagnostic-item.missing {
+            color: #ffb0bd;
+            border-color: rgba(255,107,129,.13);
+            background: rgba(255,107,129,.035);
+        }
+
+        .diagnostic-item.good {
+            color: #9dffc8;
+            border-color: rgba(93,255,174,.13);
+            background: rgba(93,255,174,.035);
+        }
+
+        .role-coverage-grid {
+            display: grid;
+            gap: 13px;
+        }
+
+        .role-coverage-row {
+            padding: 12px 14px;
+            border: 1px solid rgba(255,255,255,.06);
+            border-radius: 13px;
+            background: rgba(255,255,255,.02);
+            transition: 0.25s ease;
+        }
+
+        .role-coverage-row:hover {
+            transform: translateY(-3px);
+            border-color: rgba(85,231,255,.16);
+        }
+
+        .role-coverage-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 7px;
+            color: #aeb7d0;
+            font-size: 10px;
+        }
+
+        .role-coverage-score {
+            color: var(--resume-cyan);
+            font-family: "Orbitron", sans-serif;
+            font-size: 8px;
+        }
+
+        .role-coverage-bar {
+            height: 6px;
+            border-radius: 99px;
+            overflow: hidden;
+            background: rgba(255,255,255,.06);
+        }
+
+        .role-coverage-fill {
+            width: 0%;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(
+                90deg,
+                var(--resume-cyan),
+                var(--resume-purple)
+            );
+            transition: width .7s ease;
+        }
+
+        .role-keyword-mini {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 9px;
+        }
+
+        .mini-keyword {
+            padding: 5px 7px;
+            border-radius: 6px;
+            color: #91dfff;
+            background: rgba(85,231,255,.035);
+            border: 1px solid rgba(85,231,255,.10);
+            font-size: 8px;
+            transition: 0.2s ease;
+        }
+
+        .mini-keyword:hover {
+            transform: translateY(-2px);
+        }
+
+        .mini-keyword.missing {
+            color: #ff9aaa;
+            background: rgba(255,107,129,.035);
+            border-color: rgba(255,107,129,.10);
+        }
+
+
+        /* =========================================================
+           DAY 31 — ATS JOB MATCHING ENGINE
+        ========================================================= */
+        .job-match-section {
+            margin-top: 48px;
+        }
+
+        .job-match-shell {
+            position: relative;
+            overflow: hidden;
+            padding: 28px;
+            border: 1px solid rgba(155,108,255,.20);
+            border-radius: 26px;
+            background: linear-gradient(145deg, rgba(31,22,70,.88), rgba(7,10,28,.96));
+            box-shadow: 0 25px 90px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.04);
+        }
+
+        .job-match-shell::before {
+            content: "";
+            position: absolute;
+            width: 360px;
+            height: 360px;
+            right: -160px;
+            top: -180px;
+            border-radius: 50%;
+            background: #9b6cff;
+            filter: blur(120px);
+            opacity: .10;
+            pointer-events: none;
+        }
+
+        .job-match-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 22px;
+        }
+
+        .job-match-kicker {
+            color: #9b6cff;
+            font-family: "Orbitron", sans-serif;
+            font-size: 8px;
+            letter-spacing: 2.5px;
+            margin-bottom: 8px;
+        }
+
+        .job-match-title {
+            margin: 0;
+            color: #fff;
+            font-size: 25px;
+        }
+
+        .job-match-subtitle {
+            margin: 8px 0 0;
+            color: #7f89aa;
+            font-size: 10px;
+            line-height: 1.7;
+            max-width: 700px;
+        }
+
+        .job-match-status {
+            flex: 0 0 auto;
+            padding: 8px 11px;
+            border: 1px solid rgba(85,231,255,.16);
+            border-radius: 10px;
+            color: #7fddff;
+            background: rgba(85,231,255,.04);
+            font-family: "Orbitron", sans-serif;
+            font-size: 7px;
+            letter-spacing: 1px;
+        }
+
+        .job-match-input-grid {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 14px;
+            align-items: stretch;
+        }
+
+        .job-description-box {
+            width: 100%;
+            min-height: 190px;
+            resize: vertical;
+            padding: 17px;
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 17px;
+            outline: none;
+            background: rgba(4,7,20,.72);
+            color: #dce8ff;
+            font-family: inherit;
+            font-size: 11px;
+            line-height: 1.7;
+            transition: .25s ease;
+        }
+
+        .job-description-box::placeholder { color: #59627f; }
+        .job-description-box:focus {
+            border-color: rgba(85,231,255,.42);
+            box-shadow: 0 0 35px rgba(85,231,255,.06);
+        }
+
+        .job-match-button {
+            min-width: 190px;
+            padding: 18px;
+            border: 1px solid rgba(155,108,255,.38);
+            border-radius: 17px;
+            background: linear-gradient(145deg, rgba(155,108,255,.16), rgba(85,231,255,.07));
+            color: #d7c9ff;
+            font-family: "Orbitron", sans-serif;
+            font-size: 8px;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: .25s ease;
+        }
+
+        .job-match-button:hover:not(:disabled) {
+            transform: translateY(-4px);
+            border-color: rgba(155,108,255,.72);
+            box-shadow: 0 15px 40px rgba(155,108,255,.10);
+        }
+
+        .job-match-button:disabled { opacity: .42; cursor: not-allowed; }
+
+        .job-match-results {
+            display: none;
+            margin-top: 22px;
+        }
+
+        .job-match-results.show { display: block; animation: jobMatchReveal .5s ease both; }
+
+        @keyframes jobMatchReveal {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .job-score-grid {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 11px;
+        }
+
+        .job-score-card {
+            padding: 17px;
+            border: 1px solid rgba(255,255,255,.07);
+            border-radius: 17px;
+            background: rgba(255,255,255,.025);
+            transition: .25s ease;
+        }
+
+        .job-score-card:hover { transform: translateY(-5px); border-color: rgba(85,231,255,.22); }
+        .job-score-card.main { border-color: rgba(155,108,255,.28); background: rgba(155,108,255,.055); }
+
+        .job-score-label {
+            color: #68718f;
+            font-family: "Orbitron", sans-serif;
+            font-size: 7px;
+            letter-spacing: 1.2px;
+        }
+
+        .job-score-value {
+            margin-top: 8px;
+            color: #fff;
+            font-size: 30px;
+            font-weight: 800;
+        }
+
+        .job-score-card.main .job-score-value { color: #c2aaff; text-shadow: 0 0 25px rgba(155,108,255,.18); }
+
+        .job-score-bar { height: 5px; margin-top: 11px; border-radius: 99px; background: rgba(255,255,255,.06); overflow: hidden; }
+        .job-score-fill { width: 0%; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#55e7ff,#9b6cff); transition: width .8s ease; }
+
+        .job-match-analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(2,1fr);
+            gap: 14px;
+            margin-top: 14px;
+        }
+
+        .job-analysis-card {
+            padding: 19px;
+            border: 1px solid rgba(255,255,255,.07);
+            border-radius: 18px;
+            background: rgba(255,255,255,.022);
+        }
+
+        .job-analysis-card.wide { grid-column: 1 / -1; }
+        .job-analysis-card h4 { margin: 0 0 13px; color: #fff; font-size: 12px; }
+
+        .job-match-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        .job-match-tag {
+            padding: 6px 9px;
+            border-radius: 8px;
+            color: #a9eaff;
+            background: rgba(85,231,255,.04);
+            border: 1px solid rgba(85,231,255,.13);
+            font-size: 8px;
+            transition: .2s ease;
+        }
+
+        .job-match-tag:hover { transform: translateY(-2px); }
+        .job-match-tag.missing { color: #ffabb8; background: rgba(255,107,129,.04); border-color: rgba(255,107,129,.13); }
+        .job-match-tag.recommended { color: #d1bdff; background: rgba(155,108,255,.05); border-color: rgba(155,108,255,.14); }
+
+        .job-reason-list { display: grid; gap: 8px; }
+        .job-reason { padding: 11px 12px; border-radius: 11px; background: rgba(255,255,255,.02); color: #aeb7d0; font-size: 9px; line-height: 1.55; }
+        .job-reason.good { border-left: 2px solid #5dffae; }
+        .job-reason.bad { border-left: 2px solid #ff6b81; }
+
+        .job-match-empty { color:#68718f; font-size:9px; }
+
+        @media (max-width: 850px) {
+            .job-match-input-grid, .job-match-analysis-grid { grid-template-columns: 1fr; }
+            .job-score-grid { grid-template-columns: repeat(2,1fr); }
+            .job-analysis-card.wide { grid-column: auto; }
+        }
+
+        @media (max-width: 480px) {
+            .job-match-shell { padding: 20px; }
+            .job-match-top { flex-direction: column; }
+            .job-score-grid { grid-template-columns: 1fr; }
+            .job-match-button { min-height: 55px; }
+        }
+
+        /* =========================================================
+           ACTIONS
+        ========================================================= */
+
+        .resume-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 35px;
+        }
+
+        .secondary-button {
+            padding: 11px 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: transparent;
+            color: #9ba5c4;
+            font-size: 8px;
+        }
+
+        /* =========================================================
+           NOTIFICATION
+        ========================================================= */
+
+        .resume-notification {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            width: min(400px, calc(100% - 30px));
+            padding: 15px 18px;
+            border: 1px solid rgba(85,231,255,0.3);
+            border-radius: 13px;
+            background: rgba(8,13,30,0.95);
+            backdrop-filter: blur(18px);
+            color: #dce8ff;
+            font-size: 11px;
+            line-height: 1.5;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+            opacity: 0;
+            transform: translateY(15px);
+            pointer-events: none;
+            transition: 0.3s ease;
+            z-index: 10000;
+        }
+
+        .resume-notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .resume-notification.error {
+            border-color: rgba(255,107,129,0.45);
+        }
+
+        .resume-notification.success {
+            border-color: rgba(93,255,174,0.35);
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 1100px) {
+            .score-grid {
+                grid-template-columns: repeat(3,1fr);
+            }
+
+            .resume-main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 750px) {
+            .resume-system {
+                display: none;
+            }
+
+            .resume-hero h1 {
+                font-size: 48px;
+                letter-spacing: -2px;
+            }
+
+            .score-grid,
+            .result-grid,
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .resume-card-wide {
+                grid-column: auto;
+            }
+
+            .diagnostic-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .resume-page::after {
+                display: none;
+            }
+
+            .resume-page::before {
+                width: 280px;
+                height: 280px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .resume-container {
+                width: 90%;
+            }
+
+            .resume-upload-panel,
+            .resume-engine-panel,
+            .resume-card {
+                padding: 20px;
+            }
+
+            .resume-hero {
+                padding-top: 42px;
+            }
+        }
+
+        /* Disable heavy 3D effects for touch devices */
+        @media (hover: none) and (pointer: coarse) {
+            .resume-panel,
+            .resume-card {
+                transform: none !important;
+            }
+
+            .resume-page::before,
+            .resume-page::after {
+                display: none;
+            }
+        }
+
+        /*  ============================================================
+            JOB DESCRIPTION TEXTAREA - REMOVE EDGE RESIZE HANDLE
+            ============================================================ */
+
+        #jobDescription,
+        textarea[name="jobDescription"],
+        textarea {
+            resize: none !important;
+        }
+    </style>
+
+
+        <style>
+
+    /* ========================================================
+       DAY 32 — AI RESUME OPTIMIZER
+       EXISTING RESUME INTELLIGENCE DESIGN SYSTEM
+
+       IMPORTANT:
+       - Outer Day 32 section stays completely FLAT.
+       - Only inner panels/cards receive the existing 3D tilt.
+       - Typography, borders, gradients, radius and glow follow
+         the existing Resume Intelligence UI.
+    ======================================================== */
+
+    .resume-optimizer-section {
+        position: relative;
+        width: 100%;
+        margin-top: 6px;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        overflow: visible;
+        transform: none !important;
+        transform-style: flat;
+        perspective: none;
+    }
+
+    /* ========================================================
+       HEADER — same hierarchy as the existing page
+    ======================================================== */
+
+    .optimizer-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 20px;
+        padding: 0;
+        transform: none !important;
+    }
+
+    .optimizer-eyebrow {
+        display: inline-block;
+        margin-bottom: 10px;
+        padding: 6px 9px;
+        border: 1px solid rgba(85,231,255,0.16);
+        border-radius: 8px;
+        color: #9fdfff;
+        background: rgba(85,231,255,0.035);
+        font-family: "Orbitron", sans-serif;
+        font-size: 8px;
+        font-weight: 500;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+    }
+
+    .optimizer-header h2 {
+        margin: 0;
+        color: #fff;
+        font-size: clamp(24px, 3vw, 34px);
+        line-height: 1.1;
+        letter-spacing: -1px;
+        font-weight: 800;
+    }
+
+    .optimizer-header p {
+        max-width: 760px;
+        margin: 10px 0 0;
+        color: #9199b8;
+        font-size: 10px;
+        line-height: 1.8;
+    }
+
+    .optimizer-status {
+        flex: 0 0 auto;
+        margin-bottom: 2px;
+        padding: 7px 10px;
+        border: 1px solid rgba(85,231,255,0.16);
+        border-radius: 8px;
+        color: #9fdfff;
+        background: rgba(85,231,255,0.035);
+        font-family: "Orbitron", sans-serif;
+        font-size: 7px;
+        letter-spacing: 1px;
+    }
+
+    /* ========================================================
+       SHARED INNER CARD SYSTEM
+       Same visual language as .resume-panel / .resume-card.
+       These are the ONLY elements that tilt.
+    ======================================================== */
+
+    .resume-optimizer-section .optimizer-field,
+    .resume-optimizer-section .optimizer-column,
+    .resume-optimizer-section .optimizer-card,
+    .resume-optimizer-section .optimizer-approval,
+    .resume-optimizer-section .optimizer-success {
+        position: relative;
+        border: 1px solid var(--resume-border);
+        border-radius: 24px;
+        background:
+            linear-gradient(
+                145deg,
+                rgba(25,28,65,0.86),
+                rgba(7,10,28,0.94)
+            );
+        box-shadow:
+            0 25px 80px rgba(0,0,0,0.28),
+            inset 0 1px 0 rgba(255,255,255,0.04);
+
+        transform-style: preserve-3d;
+        will-change: transform;
+        transition:
+            transform 0.18s ease,
+            border-color 0.25s ease,
+            box-shadow 0.25s ease;
+        overflow: hidden;
+    }
+
+    .resume-optimizer-section .optimizer-field::after,
+    .resume-optimizer-section .optimizer-column::after,
+    .resume-optimizer-section .optimizer-card::after,
+    .resume-optimizer-section .optimizer-approval::after,
+    .resume-optimizer-section .optimizer-success::after {
+        content: "";
+        position: absolute;
+        width: 260px;
+        height: 260px;
+        left: var(--card-mouse-x, 50%);
+        top: var(--card-mouse-y, 50%);
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background: radial-gradient(
+            circle,
+            rgba(85,231,255,0.10),
+            rgba(155,108,255,0.055) 35%,
+            transparent 70%
+        );
+        filter: blur(25px);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+        z-index: 0;
+    }
+
+    .resume-optimizer-section .optimizer-field:hover::after,
+    .resume-optimizer-section .optimizer-column:hover::after,
+    .resume-optimizer-section .optimizer-card:hover::after,
+    .resume-optimizer-section .optimizer-approval:hover::after,
+    .resume-optimizer-section .optimizer-success:hover::after {
+        opacity: 1;
+    }
+
+    .resume-optimizer-section .optimizer-field:hover,
+    .resume-optimizer-section .optimizer-column:hover,
+    .resume-optimizer-section .optimizer-card:hover,
+    .resume-optimizer-section .optimizer-approval:hover,
+    .resume-optimizer-section .optimizer-success:hover {
+        border-color: rgba(85,231,255,0.22);
+        box-shadow:
+            0 30px 90px rgba(0,0,0,0.38),
+            0 0 35px rgba(85,231,255,0.055),
+            inset 0 1px 0 rgba(255,255,255,0.07);
+    }
+
+    .resume-optimizer-section .optimizer-field > *,
+    .resume-optimizer-section .optimizer-column > *,
+    .resume-optimizer-section .optimizer-card > *,
+    .resume-optimizer-section .optimizer-approval > *,
+    .resume-optimizer-section .optimizer-success > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* ========================================================
+       CONTROLS
+    ======================================================== */
+
+    .optimizer-controls {
+        display: grid;
+        grid-template-columns: 1.35fr 0.65fr;
+        gap: 18px;
+        margin-bottom: 13px;
+    }
+
+    .optimizer-field {
+        min-width: 0;
+        padding: 24px;
+    }
+
+    .optimizer-field label {
+        display: block;
+        margin-bottom: 11px;
+        color: #68718f;
+        font-family: "Orbitron", sans-serif;
+        font-size: 8px;
+        font-weight: 600;
+        letter-spacing: 1.8px;
+        text-transform: uppercase;
+    }
+
+    .optimizer-field label span {
+        color: #4f5874;
+        font-family: inherit;
+    }
+
+    .optimizer-field select,
+    .optimizer-field textarea {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid rgba(85,231,255,0.12);
+        border-radius: 11px;
+        outline: none;
+        background: rgba(8,12,28,0.72);
+        color: #dce8ff;
+        font-family: inherit;
+        font-size: 10px;
+        transition: 0.25s ease;
+    }
+
+    .optimizer-field select {
+        min-height: 48px;
+        padding: 0 13px;
+        cursor: pointer;
+    }
+
+    .optimizer-field textarea {
+        min-height: 132px;
+        padding: 13px;
+        resize: none;
+        line-height: 1.7;
+    }
+
+    .optimizer-field select:hover,
+    .optimizer-field textarea:hover {
+        border-color: rgba(85,231,255,0.22);
+    }
+
+    .optimizer-field select:focus,
+    .optimizer-field textarea:focus {
+        border-color: rgba(85,231,255,0.45);
+        box-shadow: 0 0 30px rgba(85,231,255,0.055);
+    }
+
+    .optimizer-field textarea::placeholder {
+        color: #59627f;
+    }
+
+    /* ========================================================
+       ACTION BUTTON — same style as Analyze Resume
+    ======================================================== */
+
+    .optimizer-action-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 18px;
+    }
+
+    .optimizer-primary-btn {
+        width: 100%;
+        height: 48px;
+        margin-top: 0;
+        padding: 0 22px;
+        border: 1px solid rgba(85,231,255,0.35);
+        border-radius: 11px;
+        background: linear-gradient(
+            90deg,
+            rgba(53,217,255,0.08),
+            rgba(140,108,255,0.08)
+        );
+        color: var(--resume-cyan);
+        font-family: "Orbitron", sans-serif;
+        font-size: 8px;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+        cursor: pointer;
+        transition: 0.25s ease;
+    }
+
+    .optimizer-primary-btn:hover:not(:disabled) {
+        border-color: rgba(85,231,255,0.70);
+        box-shadow: 0 0 30px rgba(85,231,255,0.10);
+        transform: translateY(-2px);
+    }
+
+    .optimizer-primary-btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+    #optimizerLoading {
+        color: #68718f;
+        font-family: "Orbitron", sans-serif;
+        font-size: 7px;
+        letter-spacing: 1px;
+        white-space: nowrap;
+    }
+
+    /* ========================================================
+       ORIGINAL / AI IMPROVED
+    ======================================================== */
+
+    .optimizer-comparison {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+        margin-top: 18px;
+    }
+
+    .optimizer-column {
+        min-width: 0;
+    }
+
+    .optimizer-column-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 17px 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .column-label {
+        display: block;
+        margin-bottom: 5px;
+        color: #68718f;
+        font-family: "Orbitron", sans-serif;
+        font-size: 7px;
+        font-weight: 600;
+        letter-spacing: 1.8px;
+    }
+
+    .optimized-label {
+        color: #a98cff;
+    }
+
+    .optimizer-column-header h3,
+    .optimizer-card-header h3,
+    .optimizer-approval h3,
+    .optimizer-success h3 {
+        margin: 0;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .protected-badge,
+    .review-badge {
+        flex: 0 0 auto;
+        padding: 6px 9px;
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 8px;
+        color: #7f89aa;
+        background: rgba(255,255,255,0.025);
+        font-family: "Orbitron", sans-serif;
+        font-size: 6px;
+        letter-spacing: 1px;
+    }
+
+    .review-badge {
+        color: #d7c9ff;
+        border-color: rgba(155,108,255,0.18);
+        background: rgba(155,108,255,0.05);
+    }
+
+    .resume-preview {
+        display: block;
+        width: 100%;
+        min-height: 430px;
+        box-sizing: border-box;
+        padding: 20px;
+        border: 0;
+        resize: none;
+        outline: none;
+        background: transparent;
+        color: #aeb7d0;
+        font-family: inherit;
+        font-size: 10px;
+        line-height: 1.75;
+    }
+
+    .optimized-preview {
+        background: rgba(155,108,255,0.025);
+        color: #dce8ff;
+    }
+
+    /* ========================================================
+       IMPROVEMENTS / KEYWORDS
+    ======================================================== */
+
+    .optimizer-improvements {
+        display: grid;
+        grid-template-columns: 1.35fr 0.65fr;
+        gap: 18px;
+        margin-top: 18px;
+    }
+
+    .optimizer-card {
+        min-width: 0;
+        padding: 24px;
+    }
+
+    .optimizer-card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 17px;
+    }
+
+    .card-icon {
+        width: 38px;
+        height: 38px;
+        display: grid;
+        place-items: center;
+        flex: 0 0 auto;
+        border: 1px solid rgba(85,231,255,0.12);
+        border-radius: 11px;
+        color: var(--resume-cyan);
+        background: rgba(85,231,255,0.05);
+        transform: translateZ(12px);
+    }
+
+    .improvement-item {
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .improvement-item:last-child {
+        border-bottom: 0;
+    }
+
+    .improvement-item strong {
+        display: block;
+        margin-bottom: 5px;
+        color: #fff;
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+    .improvement-item p {
+        margin: 0;
+        color: #7f89aa;
+        font-size: 9px;
+        line-height: 1.65;
+    }
+
+    .keyword-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .keyword-chip {
+        padding: 7px 10px;
+        border: 1px solid rgba(85,231,255,0.16);
+        border-radius: 8px;
+        color: #9fdfff;
+        background: rgba(85,231,255,0.04);
+        font-size: 9px;
+        transition: 0.2s ease;
+    }
+
+    .keyword-chip:hover {
+        transform: translateY(-3px);
+        border-color: rgba(85,231,255,0.5);
+        box-shadow: 0 8px 20px rgba(85,231,255,0.08);
+    }
+
+    /* ========================================================
+       FINAL REVIEW / APPROVAL
+    ======================================================== */
+
+    .optimizer-approval {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-top: 18px;
+        padding: 24px;
+        border-color: rgba(155,108,255,0.18);
+        background:
+            linear-gradient(
+                145deg,
+                rgba(35,22,70,0.85),
+                rgba(8,10,28,0.94)
+            );
+    }
+
+    .optimizer-approval p,
+    .optimizer-success p {
+        margin: 6px 0 0;
+        color: #7f89aa;
+        font-size: 9px;
+        line-height: 1.65;
+    }
+
+    .approval-actions {
+        display: flex;
+        gap: 9px;
+        flex-shrink: 0;
+    }
+
+    .optimizer-secondary-btn,
+    .optimizer-approve-btn {
+        min-height: 42px;
+        padding: 0 15px;
+        border-radius: 11px;
+        font-family: "Orbitron", sans-serif;
+        font-size: 7px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: 0.25s ease;
+    }
+
+    .optimizer-secondary-btn {
+        border: 1px solid rgba(255,255,255,0.10);
+        background: rgba(255,255,255,0.025);
+        color: #9ba5c4;
+    }
+
+    .optimizer-approve-btn {
+        border: 1px solid rgba(93,255,174,0.20);
+        background: rgba(93,255,174,0.08);
+        color: #9fffc9;
+    }
+
+    .optimizer-secondary-btn:hover,
+    .optimizer-approve-btn:hover {
+        transform: translateY(-3px);
+    }
+
+    .optimizer-success {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-top: 18px;
+        padding: 24px;
+        border-color: rgba(93,255,174,0.20);
+        background:
+            linear-gradient(
+                145deg,
+                rgba(20,58,50,0.45),
+                rgba(7,22,27,0.94)
+            );
+    }
+
+    .success-icon {
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        flex: 0 0 auto;
+        border: 1px solid rgba(93,255,174,0.18);
+        border-radius: 50%;
+        color: #9fffc9;
+        background: rgba(93,255,174,0.08);
+        font-family: "Orbitron", sans-serif;
+    }
+
+    /* ========================================================
+       RESPONSIVE
+    ======================================================== */
+
+    @media (max-width: 900px) {
+        .optimizer-controls,
+        .optimizer-comparison,
+        .optimizer-improvements {
+            grid-template-columns: 1fr;
+        }
+
+        .optimizer-approval {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .approval-actions {
+            width: 100%;
+            flex-wrap: wrap;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .optimizer-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .optimizer-header h2 {
+            letter-spacing: -0.5px;
+        }
+
+        .optimizer-status {
+            align-self: flex-start;
+        }
+
+        .optimizer-action-row {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .optimizer-primary-btn {
+            width: 100%;
+        }
+
+        .approval-actions button {
+            flex: 1;
+        }
+
+        .optimizer-field,
+        .optimizer-card,
+        .optimizer-approval,
+        .optimizer-success {
+            padding: 20px;
+        }
+    }
+
+    /* Touch devices: no tilt, same as the existing Resume UI. */
+    @media (hover: none) and (pointer: coarse) {
+        .resume-optimizer-section .optimizer-field,
+        .resume-optimizer-section .optimizer-column,
+        .resume-optimizer-section .optimizer-card,
+        .resume-optimizer-section .optimizer-approval,
+        .resume-optimizer-section .optimizer-success {
+            transform: none !important;
+        }
+    }
+
+</style>
+<script src="config.js"></script>
+</head>
+
+        
+
+
+<script>
+
+    // ============================================================
+    // DAY 32 — AI RESUME OPTIMIZER JAVASCRIPT
+    // ============================================================
+
+    let day32OptimizationResult = null;
+
+
+    // ============================================================
+    // FIND EXISTING ANALYSIS
+    // ============================================================
+
+    function getCurrentResumeAnalysis() {
+
+        /*
+         * Day 31 analysis may already exist in a global variable.
+         * We support several common names so this does not interfere
+         * with the existing Resume Analyzer.
+         */
+
+        if (
+            typeof window.resumeAnalysisResult !== "undefined"
+            && window.resumeAnalysisResult
+        ) {
+
+            return window.resumeAnalysisResult;
+
+        }
+
+        if (
+            typeof window.analysisResult !== "undefined"
+            && window.analysisResult
+        ) {
+
+            return window.analysisResult;
+
+        }
+
+        if (
+            typeof window.currentResumeAnalysis !== "undefined"
+            && window.currentResumeAnalysis
+        ) {
+
+            return window.currentResumeAnalysis;
+
+        }
+
+        return {};
+
+    }
+
+
+    // ============================================================
+    // FIND ORIGINAL RESUME TEXT
+    // ============================================================
+
+    function getCurrentResumeText() {
+
+        const analysis =
+            getCurrentResumeAnalysis();
+
+        /*
+         * Day 31 intentionally does not return raw text.
+         * Therefore we first check existing frontend state.
+         */
+
+        if (
+            typeof window.currentResumeText === "string"
+            && window.currentResumeText.trim()
+        ) {
+
+            return window.currentResumeText.trim();
+
+        }
+
+        if (
+            typeof window.resumeText === "string"
+            && window.resumeText.trim()
+        ) {
+
+            return window.resumeText.trim();
+
+        }
+
+        /*
+         * Optional textarea support if the existing UI
+         * already exposes extracted resume text.
+         */
+
+        const possibleSelectors = [
+
+            "#resumeText",
+
+            "#resume-text",
+
+            "#extractedResumeText",
+
+            "#resumeContent",
+
+            "[data-resume-text]"
+
+        ];
+
+        for (
+            const selector
+            of possibleSelectors
+        ) {
+
+            const element =
+                document.querySelector(
+                    selector
+                );
+
+            if (
+                element
+                && typeof element.value === "string"
+                && element.value.trim()
+            ) {
+
+                return element.value.trim();
+
+            }
+
+            if (
+                element
+                && element.textContent
+                && element.textContent.trim()
+            ) {
+
+                return element.textContent.trim();
+
+            }
+
+        }
+
+        /*
+         * If Day 31 only stores the analysis result,
+         * the optimizer cannot safely fabricate original text.
+         */
+
+        return "";
+
+    }
+
+
+    // ============================================================
+    // SHOW OPTIMIZER
+    // ============================================================
+
+    function showResumeOptimizer() {
+
+        const section =
+            document.getElementById(
+                "resumeOptimizerSection"
+            );
+
+        if (section) {
+
+            section.style.display = "block";
+
+            section.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        }
+
+    }
+
+
+    // ============================================================
+    // OPTIMIZE
+    // ============================================================
+
+    async function optimizeResumeWithAI() {
+
+        /*
+         * Day 32 backend expects the actual resume file as multipart/form-data.
+         * We intentionally use the existing selectedFile so the backend can
+         * re-run its own ResumeService + ResumeOptimizer pipeline.
+         * No resume text is fabricated or sent as JSON.
+         */
+
+        const targetRole =
+            document.getElementById(
+                "optimizerTargetRole"
+            ).value.trim();
+
+        const jobDescription =
+            document.getElementById(
+                "optimizerJobDescription"
+            ).value.trim();
+
+        const button =
+            document.getElementById(
+                "optimizeResumeBtn"
+            );
+
+        const buttonText =
+            document.getElementById(
+                "optimizeBtnText"
+            );
+
+        const loading =
+            document.getElementById(
+                "optimizerLoading"
+            );
+
+        const status =
+            document.getElementById(
+                "optimizerStatus"
+            );
+
+        /*
+         * The Day 32 API needs the original file.
+         * The optimizer needs the actual uploaded file. A saved filename
+         * alone is not enough to upload the resume again.
+         */
+        if (!selectedFile) {
+
+            showNotification(
+                "Please select your resume again before using AI Resume Optimizer.",
+                "error"
+            );
+
+            return;
+        }
+
+        if (!currentUser) {
+
+            showNotification(
+                "Your session has expired. Please login again.",
+                "error"
+            );
+
+            return;
+        }
+
+        button.disabled = true;
+
+        buttonText.textContent =
+            "✦ Optimizing...";
+
+        loading.style.display =
+            "inline";
+
+        status.textContent =
+            "ANALYZING";
+
+        try {
+
+            /* ----------------------------------------------------
+               BUILD EXISTING BACKEND REQUEST
+            ---------------------------------------------------- */
+
+            const formData =
+                new FormData();
+
+            formData.append(
+                "username",
+                currentUser
+            );
+
+            formData.append(
+                "target_role",
+                targetRole
+            );
+
+            formData.append(
+                "job_description",
+                jobDescription
+            );
+
+            formData.append(
+                "resume",
+                selectedFile,
+                selectedFile.name
+            );
+
+            const response =
+                await authenticatedFetch(
+                    `${API_URL}/api/resume/optimize`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Authorization":
+                                `Bearer ${authToken}`
+                        },
+                        body: formData
+                    }
+                );
+
+            let result;
+
+            try {
+
+                result =
+                    await response.json();
+
+            } catch {
+
+                throw new Error(
+                    `Server returned HTTP ${response.status}.`
+                );
+
+            }
+
+            console.log(
+                "FULL DAY 32 OPTIMIZER API RESPONSE:",
+                result
+            );
+
+            if (!response.ok || !result.success) {
+
+                throw new Error(
+                    result.message
+                    || "Resume optimization failed."
+                );
+
+            }
+
+            day32OptimizationResult =
+                result;
+
+            /* ----------------------------------------------------
+               KEEP THE BACKEND'S ORIGINAL + OPTIMIZED TEXT
+            ---------------------------------------------------- */
+
+            document.getElementById(
+                "originalResumePreview"
+            ).value =
+                result.original_resume
+                || "";
+
+            document.getElementById(
+                "optimizedResumePreview"
+            ).value =
+                result.optimized_resume
+                || "";
+
+            /* ----------------------------------------------------
+               IMPROVEMENTS + KEYWORDS
+            ---------------------------------------------------- */
+
+            renderOptimizerImprovements(
+                result
+            );
+
+            /* ----------------------------------------------------
+               DISPLAY REVIEW UI
+            ---------------------------------------------------- */
+
+            document.getElementById(
+                "optimizerComparison"
+            ).style.display =
+                "grid";
+
+            document.getElementById(
+                "optimizerImprovements"
+            ).style.display =
+                "grid";
+
+            document.getElementById(
+                "optimizerApproval"
+            ).style.display =
+                "flex";
+
+            document.getElementById(
+                "optimizerApprovalResult"
+            ).style.display =
+                "none";
+
+            status.textContent =
+                "READY FOR REVIEW";
+
+            showNotification(
+                "AI resume optimization completed. Review the changes before approval.",
+                "success"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Day 32 optimizer error:",
+                error
+            );
+
+            status.textContent =
+                "ERROR";
+
+            showNotification(
+                error.message
+                || "Unable to optimize resume.",
+                "error"
+            );
+
+        } finally {
+
+            button.disabled = false;
+
+            buttonText.textContent =
+                "✦ Optimize My Resume";
+
+            loading.style.display =
+                "none";
+
+        }
+
+    }
+
+
+    // ============================================================
+    // RENDER IMPROVEMENTS
+    // ============================================================
+
+    function renderOptimizerImprovements(
+        result
+    ) {
+
+        const list =
+            document.getElementById(
+                "improvementsList"
+            );
+
+        const keywordContainer =
+            document.getElementById(
+                "keywordSuggestions"
+            );
+
+
+        list.innerHTML = "";
+
+        keywordContainer.innerHTML = "";
+
+
+        const improvements =
+            result.improvements
+            || [];
+
+
+        if (!improvements.length) {
+
+            list.innerHTML =
+                `
+                <div class="improvement-item">
+                    <strong>
+                        No major structural changes detected
+                    </strong>
+                    <p>
+                        Review the optimized resume and
+                        role-specific suggestions.
+                    </p>
+                </div>
+                `;
+
+        } else {
+
+            improvements.forEach(
+                improvement => {
+
+                    const item =
+                        document.createElement(
+                            "div"
+                        );
+
+                    item.className =
+                        "improvement-item";
+
+
+                    const title =
+                        document.createElement(
+                            "strong"
+                        );
+
+                    title.textContent =
+                        improvement.title
+                        || improvement.category
+                        || "Improvement";
+
+
+                    const description =
+                        document.createElement(
+                            "p"
+                        );
+
+                    description.textContent =
+                        improvement.details
+                        || "";
+
+
+                    item.appendChild(
+                        title
+                    );
+
+                    item.appendChild(
+                        description
+                    );
+
+
+                    list.appendChild(
+                        item
+                    );
+
+                }
+            );
+
+        }
+
+
+        const keywords =
+            result.keyword_suggestions
+            || [];
+
+
+        if (!keywords.length) {
+
+            keywordContainer.innerHTML =
+                `
+                <span style="opacity:.6;font-size:13px;">
+                    No additional keywords were identified.
+                </span>
+                `;
+
+        } else {
+
+            keywords.forEach(
+                keyword => {
+
+                    const chip =
+                        document.createElement(
+                            "span"
+                        );
+
+                    chip.className =
+                        "keyword-chip";
+
+                    chip.textContent =
+                        keyword;
+
+
+                    keywordContainer.appendChild(
+                        chip
+                    );
+
+                }
+            );
+
+        }
+
+    }
+
+
+    // ============================================================
+    // APPROVE
+    // ============================================================
+
+    async function approveOptimizedResume() {
+
+        if (
+            !day32OptimizationResult
+            || !day32OptimizationResult.optimized_resume
+        ) {
+
+            showNotification(
+                "Please optimize the resume first.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        const approveButton =
+            document.querySelector(
+                ".optimizer-approve-btn"
+            );
+
+        if (approveButton) {
+            approveButton.disabled = true;
+            approveButton.textContent =
+                "SAVING...";
+        }
+
+        try {
+
+            /* ----------------------------------------------------
+               EXISTING BACKEND APPROVAL CONTRACT
+
+               POST /api/resume/optimize/approve
+               JSON:
+               username
+               optimized_text
+               original_filename
+            ---------------------------------------------------- */
+
+            const response =
+                await authenticatedFetch(
+                    `${API_URL}/api/resume/optimize/approve`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json",
+                            "Authorization":
+                                `Bearer ${authToken}`
+                        },
+
+                        body: JSON.stringify({
+
+                            username:
+                                currentUser,
+
+                            optimized_text:
+                                day32OptimizationResult
+                                    .optimized_resume,
+
+                            original_filename:
+                                day32OptimizationResult
+                                    .original_filename
+                                || selectedFile?.name
+                                || "resume.txt"
+
+                        })
+                    }
+                );
+
+            let result;
+
+            try {
+
+                result =
+                    await response.json();
+
+            } catch {
+
+                throw new Error(
+                    `Server returned HTTP ${response.status}.`
+                );
+
+            }
+
+            console.log(
+                "FULL DAY 32 APPROVAL API RESPONSE:",
+                result
+            );
+
+            if (
+                !response.ok
+                || !result.success
+            ) {
+
+                throw new Error(
+                    result.message
+                    || "Approval failed."
+                );
+
+            }
+
+            /* ----------------------------------------------------
+               SUCCESS STATE
+            ---------------------------------------------------- */
+
+            document.getElementById(
+                "optimizerApproval"
+            ).style.display =
+                "none";
+
+            document.getElementById(
+                "optimizerApprovalResult"
+            ).style.display =
+                "flex";
+
+            document.getElementById(
+                "optimizerStatus"
+            ).textContent =
+                "APPROVED";
+
+            showNotification(
+                result.message
+                || "Optimized resume approved and saved successfully.",
+                "success"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Day 32 approval error:",
+                error
+            );
+
+            showNotification(
+                error.message
+                || "Unable to approve optimized resume.",
+                "error"
+            );
+
+        } finally {
+
+            if (approveButton) {
+                approveButton.disabled = false;
+                approveButton.textContent =
+                    "✓ Approve Optimized Resume";
+            }
+
+        }
+
+    }
+
+
+    // ============================================================
+    // RESET
+    // ============================================================
+
+    function resetOptimizer() {
+
+        day32OptimizationResult =
+            null;
+
+
+        document.getElementById(
+            "optimizerComparison"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "optimizerImprovements"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "optimizerApproval"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "optimizerApprovalResult"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "originalResumePreview"
+        ).value =
+            "";
+
+
+        document.getElementById(
+            "optimizedResumePreview"
+        ).value =
+            "";
+
+
+        document.getElementById(
+            "improvementsList"
+        ).innerHTML =
+            "";
+
+
+        document.getElementById(
+            "keywordSuggestions"
+        ).innerHTML =
+            "";
+
+
+        document.getElementById(
+            "optimizerStatus"
+        ).textContent =
+            "READY";
+
+    }
+
+
+    // ============================================================
+    // AUTO-SHOW AFTER ANALYSIS
+    // ============================================================
+
+    /*
+     * Existing Day 31 code can call:
+     *
+     *     showResumeOptimizer();
+     *
+     * immediately after a successful resume analysis.
+     *
+     * We intentionally do not automatically show it on page load
+     * because the user should first upload/analyze a resume.
+     */
+
+</script>
+
+<body>
+
+    <div class="cursor-glow" id="cursorGlow"></div>
+
+    <div class="background-grid"></div>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <div class="ambient ambient-three"></div>
+
+    <main class="resume-page">
+        <div class="resume-container">
+
+            <header class="resume-header">
+                <div class="resume-brand">
+                    <div class="resume-brand-icon">✦</div>
+                    <div>
+                        <div class="resume-brand-name">AI CAREER</div>
+                        <div class="resume-brand-subtitle">COPILOT</div>
+                    </div>
+                </div>
+
+                <div class="resume-system">
+                    <span class="resume-status-dot"></span>
+                    <span id="systemStatusText">
+                        RESUME INTELLIGENCE ONLINE
+                    </span>
+                </div>
+            </header>
+
+            <section class="resume-hero">
+                <div class="resume-eyebrow">
+                    RESUME INTELLIGENCE SYSTEM
+                </div>
+
+                <h1>Optimize Your Resume.</h1>
+
+                <p class="resume-description">
+                    Upload your resume and let AI Career Copilot extract your profile,
+                    evaluate ATS compatibility, detect weaknesses and generate a clear
+                    improvement plan.
+                </p>
+            </section>
+
+            <section class="resume-main-grid">
+
+                <div class="resume-panel resume-upload-panel">
+
+                    <div class="resume-panel-label">
+                        RESUME ANALYSIS TERMINAL
+                    </div>
+
+                    <div class="resume-drop-zone" id="resumeDropZone">
+
+                        <div class="resume-upload-icon">📄</div>
+
+                        <h2 id="uploadTitle">
+                            Upload Your Resume
+                        </h2>
+
+                        <p id="uploadDescription">
+                            Drag & drop your resume here or select a file from your device.
+                            <br>
+                            Maximum file size: 10 MB
+                        </p>
+
+                        <div class="format-row">
+                            <span class="format-chip">PDF</span>
+                            <span class="format-chip">DOCX</span>
+                            <span class="format-chip">TXT</span>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="resume-upload-button"
+                            id="selectResumeButton"
+                        >
+                            SELECT RESUME
+                        </button>
+
+                        <input
+                            type="file"
+                            id="resumeFile"
+                            accept=".pdf,.docx,.txt"
+                        >
+
+                    </div>
+
+                    <div class="resume-file-info" id="resumeFileInfo">
+
+                        <div style="min-width:0;">
+                            <div
+                                class="resume-file-name"
+                                id="resumeFileName"
+                            >
+                                resume.pdf
+                            </div>
+
+                            <div
+                                class="resume-file-meta"
+                                id="resumeFileMeta"
+                            >
+                                PDF • 0 KB
+                            </div>
+                        </div>
+
+                        <span
+                            class="resume-file-status"
+                            id="resumeFileStatus"
+                        >
+                            READY
+                        </span>
+
+                    </div>
+
+                    <button
+                        class="analyze-resume-button"
+                        id="analyzeButton"
+                        disabled
+                    >
+                        ANALYZE RESUME →
+                    </button>
+
+                </div>
+
+                <div class="resume-engine-panel">
+
+                    <div class="resume-engine-title">
+                        COPILOT ANALYSIS ENGINE
+                    </div>
+
+                    <div class="engine-item">
+
+                        <div class="engine-icon">🧠</div>
+
+                        <div>
+                            <strong>Resume Parser</strong>
+                            <small>Extracting profile information</small>
+                        </div>
+
+                        <span
+                            class="engine-state"
+                            id="engineParser"
+                        ></span>
+
+                    </div>
+
+                    <div class="engine-item">
+
+                        <div class="engine-icon">🛠️</div>
+
+                        <div>
+                            <strong>Skill Detection</strong>
+                            <small>Identifying technical skills</small>
+                        </div>
+
+                        <span
+                            class="engine-state"
+                            id="engineSkills"
+                        ></span>
+
+                    </div>
+
+                    <div class="engine-item">
+
+                        <div class="engine-icon">📊</div>
+
+                        <div>
+                            <strong>ATS Analyzer</strong>
+                            <small>Evaluating applicant compatibility</small>
+                        </div>
+
+                        <span
+                            class="engine-state"
+                            id="engineATS"
+                        ></span>
+
+                    </div>
+
+                    <div class="engine-item">
+
+                        <div class="engine-icon">🎯</div>
+
+                        <div>
+                            <strong>Resume Scoring</strong>
+                            <small>Calculating profile strength</small>
+                        </div>
+
+                        <span
+                            class="engine-state"
+                            id="engineScore"
+                        ></span>
+
+                    </div>
+
+                    <div
+                        style="
+                            margin-top:20px;
+                            padding:14px;
+                            border:1px solid rgba(155,108,255,0.12);
+                            border-radius:14px;
+                            background:rgba(155,108,255,0.035);
+                        "
+                    >
+                        <div
+                            class="mini-label"
+                            style="
+                                color:#707894;
+                                font-size:7px;
+                                letter-spacing:1.5px;
+                            "
+                        >
+                            BACKEND SERVICE
+                        </div>
+
+                        <div
+                            style="
+                                margin-top:7px;
+                                color:#c9b9ff;
+                                font-size:10px;
+                            "
+                        >
+                            ResumeService → ResumeAnalyzer → API
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="resume-loading" id="resumeLoading">
+                ANALYZING RESUME
+
+                <span class="loading-dot"></span>
+                <span class="loading-dot"></span>
+                <span class="loading-dot"></span>
+            </div>
+
+            <section
+                class="resume-results"
+                id="resumeResults"
+            >
+
+                <div class="resume-section-title">
+                    AI ANALYSIS RESULTS
+                </div>
+
+                <div class="score-grid">
+
+                    <div class="score-card primary">
+                        <div class="score-label">
+                            RESUME STRENGTH
+                        </div>
+
+                        <div
+                            class="score-value"
+                            id="strengthScore"
+                        >
+                            0
+                        </div>
+
+                        <div
+                            class="score-subtitle"
+                            id="strengthLabel"
+                        >
+                            Overall resume quality
+                        </div>
+
+                        <div class="score-bar">
+                            <div
+                                class="score-bar-fill"
+                                id="strengthBar"
+                            ></div>
+                        </div>
+                    </div>
+
+                    <div class="score-card">
+                        <div class="score-label">
+                            ATS SCORE
+                        </div>
+
+                        <div
+                            class="score-value"
+                            id="atsScore"
+                        >
+                            0
+                        </div>
+
+                        <div
+                            class="score-subtitle"
+                            id="atsLabel"
+                        >
+                            Applicant tracking compatibility
+                        </div>
+
+                        <div class="score-bar">
+                            <div
+                                class="score-bar-fill"
+                                id="atsBar"
+                            ></div>
+                        </div>
+                    </div>
+
+                    <div class="score-card">
+                        <div class="score-label">
+                            CONTENT QUALITY
+                        </div>
+
+                        <div
+                            class="score-value"
+                            id="contentScore"
+                        >
+                            0
+                        </div>
+
+                        <div class="score-subtitle">
+                            Structure and content depth
+                        </div>
+
+                        <div class="score-bar">
+                            <div
+                                class="score-bar-fill"
+                                id="contentBar"
+                            ></div>
+                        </div>
+                    </div>
+
+                    <div class="score-card">
+                        <div class="score-label">
+                            SKILLS STRENGTH
+                        </div>
+
+                        <div
+                            class="score-value"
+                            id="skillsScore"
+                        >
+                            0
+                        </div>
+
+                        <div class="score-subtitle">
+                            Technical skill coverage
+                        </div>
+
+                        <div class="score-bar">
+                            <div
+                                class="score-bar-fill"
+                                id="skillsBar"
+                            ></div>
+                        </div>
+                    </div>
+
+                    <div class="score-card">
+                        <div class="score-label">
+                            ACHIEVEMENT STRENGTH
+                        </div>
+
+                        <div
+                            class="score-value"
+                            id="achievementScore"
+                        >
+                            0
+                        </div>
+
+                        <div class="score-subtitle">
+                            Impact and measurable results
+                        </div>
+
+                        <div class="score-bar">
+                            <div
+                                class="score-bar-fill"
+                                id="achievementBar"
+                            ></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="result-grid">
+
+                    <div class="resume-card">
+
+                        <h3>👤 Detected Information</h3>
+
+                        <div class="info-row">
+                            <span class="info-label">Name</span>
+                            <span
+                                class="info-value"
+                                id="detectedName"
+                            >
+                                —
+                            </span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="info-label">Email</span>
+                            <span
+                                class="info-value"
+                                id="detectedEmail"
+                            >
+                                —
+                            </span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="info-label">Phone</span>
+                            <span
+                                class="info-value"
+                                id="detectedPhone"
+                            >
+                                —
+                            </span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="info-label">LinkedIn</span>
+                            <span
+                                class="info-value"
+                                id="detectedLinkedIn"
+                            >
+                                —
+                            </span>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="info-label">GitHub</span>
+                            <span
+                                class="info-value"
+                                id="detectedGitHub"
+                            >
+                                —
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="resume-card">
+
+                        <h3>📈 Resume Health</h3>
+
+                        <div
+                            class="health-list"
+                            id="healthList"
+                        ></div>
+
+                    </div>
+
+                    <div class="resume-card">
+
+                        <h3>📚 Resume Sections</h3>
+
+                        <div
+                            class="section-list"
+                            id="sectionList"
+                        ></div>
+
+                    </div>
+
+                    <div class="resume-card">
+
+                        <h3>🛠️ Detected Skills</h3>
+
+                        <div
+                            class="tags"
+                            id="skillsContainer"
+                        ></div>
+
+                    </div>
+
+                    <div class="resume-card resume-card-wide">
+
+                        <h3>🔎 Keyword Coverage</h3>
+
+                        <div
+                            class="info-row"
+                            style="
+                                border-bottom:none;
+                                padding-top:0;
+                            "
+                        >
+                            <span class="info-label">
+                                Coverage Score
+                            </span>
+
+                            <span
+                                class="info-value"
+                                id="keywordCoverageScore"
+                            >
+                                0%
+                            </span>
+                        </div>
+
+                        <div
+                            class="keyword-columns"
+                            id="matchedKeywords"
+                        ></div>
+
+                        <div style="height:12px;"></div>
+
+                        <div
+                            style="
+                                color:#68718f;
+                                font-size:9px;
+                                margin-bottom:8px;
+                            "
+                        >
+                            MISSING / UNDER-COVERED KEYWORDS
+                        </div>
+
+                        <div
+                            class="keyword-columns"
+                            id="missingKeywords"
+                        ></div>
+
+                    </div>
+
+                    <!-- ADVANCED DIAGNOSTICS -->
+
+                    <div class="resume-card resume-card-wide">
+
+                        <h3>🧬 Advanced Resume Diagnostics</h3>
+
+                        <div class="diagnostic-grid">
+
+                            <div>
+                                <div class="resume-panel-label">
+                                    MISSING SECTIONS
+                                </div>
+
+                                <div
+                                    class="diagnostic-list"
+                                    id="missingSectionsList"
+                                ></div>
+                            </div>
+
+                            <div>
+                                <div class="resume-panel-label">
+                                    WEAK SECTIONS
+                                </div>
+
+                                <div
+                                    class="diagnostic-list"
+                                    id="weakSectionsList"
+                                ></div>
+                            </div>
+
+                            <div>
+                                <div class="resume-panel-label">
+                                    WEAK ACTION VERBS
+                                </div>
+
+                                <div
+                                    class="diagnostic-list"
+                                    id="weakVerbsList"
+                                ></div>
+                            </div>
+
+                            <div>
+                                <div class="resume-panel-label">
+                                    GENERIC LANGUAGE
+                                </div>
+
+                                <div
+                                    class="diagnostic-list"
+                                    id="genericDescriptionsList"
+                                ></div>
+                            </div>
+
+                            <div>
+                                <div class="resume-panel-label">
+                                    METRICS / ACHIEVEMENTS
+                                </div>
+
+                                <div
+                                    class="diagnostic-list"
+                                    id="metricsList"
+                                ></div>
+                            </div>
+
+                            <div>
+                                <div class="resume-panel-label">
+                                    PROFILE COMPLETENESS
+                                </div>
+
+                                <div
+                                    class="diagnostic-list"
+                                    id="profileCompletenessList"
+                                ></div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="resume-card resume-card-wide">
+
+                        <h3>🎯 Role Keyword Coverage</h3>
+
+                        <div
+                            class="role-coverage-grid"
+                            id="roleKeywordCoverage"
+                        ></div>
+
+                    </div>
+
+                    <div class="resume-card resume-card-wide">
+
+                        <h3>💬 Copilot Suggestions</h3>
+
+                        <div
+                            class="diagnostic-list"
+                            id="suggestionsList"
+                        ></div>
+
+                    </div>
+
+                    <div class="resume-card">
+
+                        <h3>⚠️ Weaknesses</h3>
+
+                        <div
+                            class="priority-list"
+                            id="weaknessList"
+                        ></div>
+
+                    </div>
+
+                    <div class="resume-card">
+
+                        <h3>💡 Smart Recommendations</h3>
+
+                        <div
+                            class="priority-list"
+                            id="recommendationList"
+                        ></div>
+
+                    </div>
+
+                    <div class="resume-card resume-card-wide">
+
+                        <h3>🧭 Copilot Action Plan</h3>
+
+                        <div
+                            class="priority-list"
+                            id="actionPlanList"
+                        ></div>
+
+                    </div>
+
+                    <div class="resume-card resume-card-wide">
+
+                        <h3>📊 Resume Statistics</h3>
+
+                        <div class="stats-grid">
+
+                            <div class="stat-box">
+                                <div
+                                    class="stat-value"
+                                    id="wordCount"
+                                >
+                                    0
+                                </div>
+
+                                <div class="stat-label">
+                                    WORDS
+                                </div>
+                            </div>
+
+                            <div class="stat-box">
+                                <div
+                                    class="stat-value"
+                                    id="characterCount"
+                                >
+                                    0
+                                </div>
+
+                                <div class="stat-label">
+                                    CHARACTERS
+                                </div>
+                            </div>
+
+                            <div class="stat-box">
+                                <div
+                                    class="stat-value"
+                                    id="weaknessCount"
+                                >
+                                    0
+                                </div>
+
+                                <div class="stat-label">
+                                    WEAKNESSES
+                                </div>
+                            </div>
+
+                            <div class="stat-box">
+                                <div
+                                    class="stat-value"
+                                    id="metricCount"
+                                >
+                                    0
+                                </div>
+
+                                <div class="stat-label">
+                                    METRICS FOUND
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="resume-card resume-card-wide">
+
+                        <h3>🎯 Copilot Insight</h3>
+
+                        <p
+                            id="copilotInsight"
+                            style="
+                                color:#818aa9;
+                                font-size:11px;
+                                line-height:1.8;
+                                margin:0;
+                            "
+                        >
+                            Upload and analyze your resume to receive
+                            AI-powered insights.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =====================================================
+                 DAY 31 — ATS JOB MATCHING ENGINE
+            ===================================================== -->
+            <section class="job-match-section" id="jobMatchSection">
+                <div class="resume-section-title">ATS JOB MATCHING ENGINE</div>
+
+                <div class="job-match-shell">
+                    <div class="job-match-top">
+                        <div>
+                            <div class="job-match-kicker">RESUME ↔ JOB INTELLIGENCE</div>
+                            <h2 class="job-match-title">How well do you match this job?</h2>
+                            <p class="job-match-subtitle">
+                                Paste a target job description. Your already-analyzed resume will be matched against required skills, keywords and experience — without changing the original resume analysis.
+                            </p>
+                        </div>
+                        <div class="job-match-status" id="jobMatchStatus">ENGINE READY</div>
+                    </div>
+
+                    <div class="job-match-input-grid">
+                        <textarea
+                            id="jobDescriptionInput"
+                            class="job-description-box"
+                            placeholder="Paste the complete job description here...
+
+Example: We are looking for a Python Backend Engineer with Python, Flask, REST API, SQL, Git, Docker, AWS and Machine Learning experience. 2+ years of experience preferred."
+                        ></textarea>
+
+                        <button
+                            type="button"
+                            class="job-match-button"
+                            id="jobMatchButton"
+                            disabled
+                        >
+                            🎯 ANALYZE<br>JOB MATCH
+                        </button>
+                    </div>
+
+                    <div class="job-match-results" id="jobMatchResults">
+                        <div class="job-score-grid">
+                            <div class="job-score-card main">
+                                <div class="job-score-label">JOB MATCH</div>
+                                <div class="job-score-value" id="jobMatchScore">—</div>
+                                <div class="job-score-bar"><div class="job-score-fill" id="jobMatchBar"></div></div>
+                            </div>
+                            <div class="job-score-card">
+                                <div class="job-score-label">SKILL MATCH</div>
+                                <div class="job-score-value" id="jobSkillScore">—</div>
+                                <div class="job-score-bar"><div class="job-score-fill" id="jobSkillBar"></div></div>
+                            </div>
+                            <div class="job-score-card">
+                                <div class="job-score-label">KEYWORD MATCH</div>
+                                <div class="job-score-value" id="jobKeywordScore">—</div>
+                                <div class="job-score-bar"><div class="job-score-fill" id="jobKeywordBar"></div></div>
+                            </div>
+                            <div class="job-score-card">
+                                <div class="job-score-label">EXPERIENCE MATCH</div>
+                                <div class="job-score-value" id="jobExperienceScore">—</div>
+                                <div class="job-score-bar"><div class="job-score-fill" id="jobExperienceBar"></div></div>
+                            </div>
+                        </div>
+
+                        <div class="job-match-analysis-grid">
+                            <div class="job-analysis-card">
+                                <h4>✓ Why You Match</h4>
+                                <div class="job-reason-list" id="whyMatchList"></div>
+                            </div>
+                            <div class="job-analysis-card">
+                                <h4>⚠ Why You Don't</h4>
+                                <div class="job-reason-list" id="whyDontList"></div>
+                            </div>
+                            <div class="job-analysis-card">
+                                <h4>✓ Matched Skills</h4>
+                                <div class="job-match-list" id="matchedJobSkills"></div>
+                            </div>
+                            <div class="job-analysis-card">
+                                <h4>✗ Missing Skills</h4>
+                                <div class="job-match-list" id="missingJobSkills"></div>
+                            </div>
+                            <div class="job-analysis-card wide">
+                                <h4>🔑 Keyword Analysis</h4>
+                                <div style="color:#68718f;font-size:8px;margin-bottom:7px;">MATCHED KEYWORDS</div>
+                                <div class="job-match-list" id="matchedJobKeywords"></div>
+                                <div style="height:13px;"></div>
+                                <div style="color:#68718f;font-size:8px;margin-bottom:7px;">MISSING KEYWORDS</div>
+                                <div class="job-match-list" id="missingJobKeywords"></div>
+                            </div>
+                            <div class="job-analysis-card wide">
+                                <h4>🚀 Recommended Skills</h4>
+                                <div class="job-match-list" id="recommendedJobSkills"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DAY 32 — AI RESUME OPTIMIZER -->
+
+<section
+    id="resumeOptimizerSection"
+    class="resume-optimizer-section"
+    style="display: none;"
+>
+
+    <div class="optimizer-header">
+
+        <div>
+
+            <span class="optimizer-eyebrow">
+                AI CAREER COPILOT
+            </span>
+
+            <h2>
+                AI Resume Optimizer
+            </h2>
+
+            <p>
+                Transform weak resume content into stronger, role-aligned
+                language while keeping your original resume protected.
+            </p>
+
+        </div>
+
+        <div class="optimizer-status">
+            <span id="optimizerStatus">
+                READY
+            </span>
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================
+         TARGET ROLE
+    ========================================================= -->
+
+    <div class="optimizer-controls">
+
+        <div class="optimizer-field">
+
+            <label for="optimizerTargetRole">
+                Target Role
+            </label>
+
+            <select
+                id="optimizerTargetRole"
+            >
+
+                <option value="">
+                    Auto Detect
+                </option>
+
+                <option value="AI / ML">
+                    AI / ML
+                </option>
+
+                <option value="Python Developer">
+                    Python Developer
+                </option>
+
+                <option value="Data Science">
+                    Data Science
+                </option>
+
+                <option value="Web Development">
+                    Web Development
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="optimizer-field optimizer-job-field">
+
+            <label for="optimizerJobDescription">
+                Job Description
+                <span>(Optional)</span>
+            </label>
+
+            <textarea
+                id="optimizerJobDescription"
+                rows="4"
+                placeholder="Paste the job description here for more targeted optimization..."
+            ></textarea>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================
+         OPTIMIZE BUTTON
+    ========================================================= -->
+
+    <div class="optimizer-action-row">
+
+        <button
+            id="optimizeResumeBtn"
+            class="optimizer-primary-btn"
+            type="button"
+            onclick="optimizeResumeWithAI()"
+        >
+
+            <span id="optimizeBtnText">
+                ✦ Optimize My Resume
+            </span>
+
+        </button>
+
+        <span
+            id="optimizerLoading"
+            style="display: none;"
+        >
+            AI is analyzing your resume...
+        </span>
+
+    </div>
+
+
+    <!-- ========================================================
+         COMPARISON
+    ========================================================= -->
+
+    <div
+        id="optimizerComparison"
+        class="optimizer-comparison"
+        style="display: none;"
+    >
+
+        <div class="optimizer-column">
+
+            <div class="optimizer-column-header">
+
+                <div>
+                    <span class="column-label">
+                        ORIGINAL
+                    </span>
+
+                    <h3>
+                        Your Resume
+                    </h3>
+                </div>
+
+                <span class="protected-badge">
+                    🔒 PROTECTED
+                </span>
+
+            </div>
+
+            <textarea
+                id="originalResumePreview"
+                class="resume-preview"
+                readonly
+            ></textarea>
+
+        </div>
+
+
+        <div class="optimizer-column">
+
+            <div class="optimizer-column-header">
+
+                <div>
+                    <span class="column-label optimized-label">
+                        AI IMPROVED
+                    </span>
+
+                    <h3>
+                        Optimized Resume
+                    </h3>
+                </div>
+
+                <span class="review-badge">
+                    REVIEW
+                </span>
+
+            </div>
+
+            <textarea
+                id="optimizedResumePreview"
+                class="resume-preview optimized-preview"
+                readonly
+            ></textarea>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================
+         IMPROVEMENTS
+    ========================================================= -->
+
+    <div
+        id="optimizerImprovements"
+        class="optimizer-improvements"
+        style="display: none;"
+    >
+
+        <div class="optimizer-card">
+
+            <div class="optimizer-card-header">
+
+                <span class="card-icon">
+                    ✦
+                </span>
+
+                <div>
+
+                    <span class="column-label">
+                        AI ANALYSIS
+                    </span>
+
+                    <h3>
+                        What Was Improved
+                    </h3>
+
+                </div>
+
+            </div>
+
+            <div id="improvementsList"></div>
+
+        </div>
+
+
+        <div class="optimizer-card">
+
+            <div class="optimizer-card-header">
+
+                <span class="card-icon">
+                    #
+                </span>
+
+                <div>
+
+                    <span class="column-label">
+                        ATS
+                    </span>
+
+                    <h3>
+                        Suggested Keywords
+                    </h3>
+
+                </div>
+
+            </div>
+
+            <div
+                id="keywordSuggestions"
+                class="keyword-list"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================
+         APPROVAL
+    ========================================================= -->
+
+    <div
+        id="optimizerApproval"
+        class="optimizer-approval"
+        style="display: none;"
+    >
+
+        <div>
+
+            <span class="column-label">
+                FINAL REVIEW
+            </span>
+
+            <h3>
+                Ready to approve?
+            </h3>
+
+            <p>
+                Your original resume will remain untouched.
+                Approving creates the optimized version.
+            </p>
+
+        </div>
+
+        <div class="approval-actions">
+
+            <button
+                type="button"
+                class="optimizer-secondary-btn"
+                onclick="resetOptimizer()"
+            >
+                Review Again
+            </button>
+
+            <button
+                type="button"
+                class="optimizer-approve-btn"
+                onclick="approveOptimizedResume()"
+            >
+                ✓ Approve Optimized Resume
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================
+         APPROVAL RESULT
+    ========================================================= -->
+
+    <div
+        id="optimizerApprovalResult"
+        class="optimizer-success"
+        style="display: none;"
+    >
+
+        <div class="success-icon">
+            ✓
+        </div>
+
+        <div>
+
+            <h3>
+                Resume Optimization Approved
+            </h3>
+
+            <p>
+                Your optimized resume has been approved.
+                The original resume remains unchanged.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+            <div class="resume-actions">
+
+                <button
+                    class="secondary-button"
+                    id="backDashboardButton"
+                >
+                    ← BACK TO DASHBOARD
+                </button>
+
+            </div>
+
+            <footer class="dashboard-footer">
+
+                <span>AI CAREER COPILOT</span>
+                <span>RESUME OS v2.0</span>
+                <span>AI ENGINE READY</span>
+
+            </footer>
+
+        </div>
+    </main>
+
+    <div
+        class="resume-notification"
+        id="resumeNotification"
+    ></div>
+
+
+    <script>
+
+        /* =====================================================
+           CODE 1 CURSOR GLOW
+        ===================================================== */
+
+        const cursorGlow =
+            document.getElementById("cursorGlow");
+
+        document.addEventListener(
+            "mousemove",
+            function(event) {
+                cursorGlow.style.left = event.clientX + "px";
+                cursorGlow.style.top = event.clientY + "px";
+                cursorGlow.style.opacity = "1";
+            }
+        );
+
+        document.addEventListener(
+            "mouseleave",
+            function() {
+                cursorGlow.style.opacity = "0";
+            }
+        );
+
+
+        /* =====================================================
+           3D CARD TILT + LOCAL MOUSE GLOW
+        ===================================================== */
+
+        function enable3DHover() {
+
+            const cards = document.querySelectorAll(
+                ".resume-panel, .resume-card, " +
+                ".resume-optimizer-section .optimizer-field, " +
+                ".resume-optimizer-section .optimizer-column, " +
+                ".resume-optimizer-section .optimizer-card, " +
+                ".resume-optimizer-section .optimizer-approval, " +
+                ".resume-optimizer-section .optimizer-success"
+            );
+
+            cards.forEach(card => {
+
+                card.addEventListener("mousemove", (event) => {
+
+                    if (
+                        window.matchMedia(
+                            "(hover: none) and (pointer: coarse)"
+                        ).matches
+                    ) {
+                        return;
+                    }
+
+                    const rect = card.getBoundingClientRect();
+
+                    const x =
+                        event.clientX - rect.left;
+
+                    const y =
+                        event.clientY - rect.top;
+
+                    const centerX =
+                        rect.width / 2;
+
+                    const centerY =
+                        rect.height / 2;
+
+                    const rotateX =
+                        ((y - centerY) / centerY) * -4.5;
+
+                    const rotateY =
+                        ((x - centerX) / centerX) * 4.5;
+
+                    card.style.transform =
+                        `perspective(1000px)
+                         rotateX(${rotateX}deg)
+                         rotateY(${rotateY}deg)
+                         translateY(-3px)`;
+
+                    card.style.setProperty(
+                        "--card-mouse-x",
+                        `${x}px`
+                    );
+
+                    card.style.setProperty(
+                        "--card-mouse-y",
+                        `${y}px`
+                    );
+                });
+
+                card.addEventListener("mouseleave", () => {
+
+                    card.style.transform =
+                        "perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)";
+
+                });
+
+            });
+        }
+
+
+        /* =====================================================
+           API + SESSION
+        ===================================================== */
+
+        const API_URL = window.CAREER_COPILOT_API_URL;
+
+        /* =========================================================
+           DAY 38 — AUTHENTICATED API REQUESTS
+        ========================================================= */
+
+        const USER_STORAGE_KEY = "careerCopilotUser";
+        const TOKEN_STORAGE_KEY = "careerCopilotToken";
+        const LOGIN_STORAGE_KEY = "careerCopilotLoggedIn";
+
+        function clearAuthAndRedirect(message = "Authentication required. Please login again.") {
+            console.warn("[AUTH]", message);
+            localStorage.removeItem(USER_STORAGE_KEY);
+            localStorage.removeItem(TOKEN_STORAGE_KEY);
+            localStorage.removeItem(LOGIN_STORAGE_KEY);
+            window.location.replace("index.html");
+        }
+
+        async function authenticatedFetch(url, options = {}) {
+            const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+
+            if (!token) {
+                throw new Error("Authentication required. Please login again.");
+            }
+
+            const headers = new Headers(options.headers || {});
+            headers.set("Authorization", `Bearer ${token}`);
+
+            const response = await window.fetch(url, {
+                ...options,
+                headers
+            });
+
+            if (response.status === 401) {
+                let message = "Authentication required. Please login again.";
+                try {
+                    const cloned = response.clone();
+                    const data = await cloned.json();
+                    message = data.message || message;
+                } catch (_) {}
+                throw new Error(message);
+            }
+
+            return response;
+        }
+
+
+        const MAX_FILE_SIZE =
+            10 * 1024 * 1024;
+
+        const ALLOWED_EXTENSIONS =
+            ["pdf", "docx", "txt"];
+
+        const currentUser =
+            localStorage.getItem(USER_STORAGE_KEY);
+
+        const authToken =
+            localStorage.getItem(TOKEN_STORAGE_KEY);
+
+        if (!currentUser || !authToken) {
+            console.warn(
+                "[AUTH] Resume Intelligence opened without an active session."
+            );
+        }
+
+
+        /* =====================================================
+           ELEMENTS
+        ===================================================== */
+
+        const resumeFile =
+            document.getElementById("resumeFile");
+
+        const dropZone =
+            document.getElementById("resumeDropZone");
+
+        const selectResumeButton =
+            document.getElementById("selectResumeButton");
+
+        const fileInfo =
+            document.getElementById("resumeFileInfo");
+
+        const fileName =
+            document.getElementById("resumeFileName");
+
+        const fileMeta =
+            document.getElementById("resumeFileMeta");
+
+        const fileStatus =
+            document.getElementById("resumeFileStatus");
+
+        const analyzeButton =
+            document.getElementById("analyzeButton");
+
+        const loading =
+            document.getElementById("resumeLoading");
+
+        const results =
+            document.getElementById("resumeResults");
+
+        let selectedFile = null;
+        let notificationTimer = null;
+        let latestResumeFile = null;
+        let latestResumeAnalysis = null;
+
+
+        /* =====================================================
+           HELPERS
+        ===================================================== */
+
+        function formatBytes(bytes) {
+
+            if (!bytes) return "0 KB";
+
+            const units =
+                ["B", "KB", "MB"];
+
+            const index =
+                Math.min(
+                    Math.floor(
+                        Math.log(bytes) /
+                        Math.log(1024)
+                    ),
+                    units.length - 1
+                );
+
+            return `${(
+                bytes /
+                Math.pow(1024, index)
+            ).toFixed(
+                index === 0 ? 0 : 1
+            )} ${units[index]}`;
+        }
+
+
+        function getExtension(name) {
+
+            return name
+                .split(".")
+                .pop()
+                .toLowerCase();
+        }
+
+
+        function showNotification(
+            message,
+            type = ""
+        ) {
+
+            const notification =
+                document.getElementById(
+                    "resumeNotification"
+                );
+
+            notification.textContent =
+                message;
+
+            notification.className =
+                `resume-notification show ${type}`
+                .trim();
+
+            clearTimeout(notificationTimer);
+
+            notificationTimer =
+                setTimeout(() => {
+
+                    notification.classList.remove(
+                        "show"
+                    );
+
+                }, 4000);
+        }
+
+
+        function setEngineState(
+            ids,
+            state
+        ) {
+
+            ids.forEach(id => {
+
+                const element =
+                    document.getElementById(id);
+
+                if (!element) return;
+
+                element.className =
+                    `engine-state ${state || ""}`
+                    .trim();
+            });
+        }
+
+
+        function setScore(
+            id,
+            barId,
+            value,
+            labelId = null
+        ) {
+
+            const safeValue =
+                Math.max(
+                    0,
+                    Math.min(
+                        100,
+                        Number(value) || 0
+                    )
+                );
+
+            document.getElementById(
+                id
+            ).textContent =
+                safeValue;
+
+            document.getElementById(
+                barId
+            ).style.width =
+                `${safeValue}%`;
+
+            if (labelId) {
+
+                document.getElementById(
+                    labelId
+                ).textContent =
+                    getScoreLabel(
+                        safeValue
+                    );
+            }
+        }
+
+
+        function getScoreLabel(score) {
+
+            if (score >= 90)
+                return "Excellent";
+
+            if (score >= 80)
+                return "Strong";
+
+            if (score >= 70)
+                return "Good";
+
+            if (score >= 55)
+                return "Needs Improvement";
+
+            return "Needs Optimization";
+        }
+
+
+        function clearNode(node) {
+
+            while (node.firstChild)
+                node.removeChild(
+                    node.firstChild
+                );
+        }
+
+
+        function createTag(
+            text,
+            className = "skill-tag"
+        ) {
+
+            const tag =
+                document.createElement("span");
+
+            tag.className =
+                className;
+
+            tag.textContent =
+                text;
+
+            return tag;
+        }
+
+
+        function createPriorityBadge(priority) {
+
+            const badge =
+                document.createElement("span");
+
+            const normalized =
+                String(
+                    priority || "LOW"
+                ).toUpperCase();
+
+            badge.className =
+                `priority-badge priority-${normalized.toLowerCase()}`;
+
+            badge.textContent =
+                normalized;
+
+            return badge;
+        }
+
+
+        function createEmptyMessage(text) {
+
+            const item =
+                document.createElement("div");
+
+            item.style.color =
+                "#68718f";
+
+            item.style.fontSize =
+                "10px";
+
+            item.textContent =
+                text;
+
+            return item;
+        }
+
+
+        /* =====================================================
+           FILE HANDLING
+        ===================================================== */
+
+        selectResumeButton.addEventListener(
+            "click",
+            event => {
+
+                event.stopPropagation();
+
+                resumeFile.click();
+            }
+        );
+
+
+        dropZone.addEventListener(
+            "click",
+            () => resumeFile.click()
+        );
+
+
+        resumeFile.addEventListener(
+            "change",
+            function () {
+
+                if (this.files.length)
+                    handleFile(
+                        this.files[0]
+                    );
+            }
+        );
+
+
+        ["dragenter", "dragover"].forEach(
+            eventName => {
+
+                dropZone.addEventListener(
+                    eventName,
+                    event => {
+
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        dropZone.classList.add(
+                            "dragover"
+                        );
+                    }
+                );
+            }
+        );
+
+
+        ["dragleave", "drop"].forEach(
+            eventName => {
+
+                dropZone.addEventListener(
+                    eventName,
+                    event => {
+
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        dropZone.classList.remove(
+                            "dragover"
+                        );
+                    }
+                );
+            }
+        );
+
+
+        dropZone.addEventListener(
+            "drop",
+            event => {
+
+                const file =
+                    event.dataTransfer.files[0];
+
+                if (file)
+                    handleFile(file);
+            }
+        );
+
+
+        function handleFile(file) {
+
+            const extension =
+                getExtension(
+                    file.name
+                );
+
+            if (
+                !ALLOWED_EXTENSIONS.includes(
+                    extension
+                )
+            ) {
+
+                selectedFile = null;
+
+                analyzeButton.disabled =
+                    true;
+
+                showNotification(
+                    "Unsupported format. Please use PDF, DOCX or TXT.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (
+                file.size >
+                MAX_FILE_SIZE
+            ) {
+
+                selectedFile = null;
+
+                analyzeButton.disabled =
+                    true;
+
+                showNotification(
+                    "Resume is too large. Maximum allowed size is 10 MB.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            selectedFile =
+                file;
+
+            fileName.textContent =
+                file.name;
+
+            fileMeta.textContent =
+                `${extension.toUpperCase()} • ${formatBytes(file.size)}`;
+
+            fileStatus.textContent =
+                "READY";
+
+            fileInfo.classList.add(
+                "show"
+            );
+
+            analyzeButton.disabled =
+                false;
+
+            showNotification(
+                "Resume loaded successfully. Starting automatic analysis.",
+                "success"
+            );
+
+            void analyzeResume();
+        }
+
+
+        /* =====================================================
+           DAY 31 JOB MATCH INPUT
+        ===================================================== */
+        const jobDescriptionInput = document.getElementById("jobDescriptionInput");
+        const jobMatchButton = document.getElementById("jobMatchButton");
+        const jobMatchResults = document.getElementById("jobMatchResults");
+
+        function updateJobMatchButton() {
+            const hasJob = jobDescriptionInput && jobDescriptionInput.value.trim().length >= 30;
+            jobMatchButton.disabled = !(hasJob && latestResumeFile);
+        }
+
+        if (jobDescriptionInput) {
+            jobDescriptionInput.addEventListener("input", updateJobMatchButton);
+        }
+
+        /* =====================================================
+           ANALYZE RESUME
+        ===================================================== */
+
+        analyzeButton.addEventListener(
+            "click",
+            analyzeResume
+        );
+
+
+        async function analyzeResume() {
+
+            if (!selectedFile) {
+
+                showNotification(
+                    "Please select a resume first.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            analyzeButton.disabled =
+                true;
+
+            analyzeButton.textContent =
+                "ANALYZING...";
+
+            loading.classList.add(
+                "show"
+            );
+
+            results.classList.remove(
+                "show"
+            );
+
+            fileStatus.textContent =
+                "PROCESSING";
+
+            document.getElementById(
+                "systemStatusText"
+            ).textContent =
+                "RESUME ANALYSIS IN PROGRESS";
+
+            setEngineState(
+                [
+                    "engineParser",
+                    "engineSkills",
+                    "engineATS",
+                    "engineScore"
+                ],
+                "active"
+            );
+
+
+            try {
+
+                const formData =
+                    new FormData();
+
+                formData.append(
+                    "resume",
+                    selectedFile
+                );
+
+                formData.append(
+                    "username",
+                    currentUser
+                );
+
+
+                const response =
+                    await authenticatedFetch(
+                        `${API_URL}/api/resume/analyze`,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Authorization":
+                                    `Bearer ${authToken}`
+                            },
+                            body: formData
+                        }
+                    );
+
+
+                let result;
+
+                try {
+
+                    result =
+                        await response.json();
+
+                } catch {
+
+                    throw new Error(
+                        `Server returned HTTP ${response.status}.`
+                    );
+                }
+
+
+                console.log(
+                    "FULL RESUME API RESPONSE:",
+                    result
+                );
+
+
+                if (
+                    !response.ok ||
+                    !result.success
+                ) {
+
+                    throw new Error(
+                        result.message ||
+                        "Resume analysis failed."
+                    );
+                }
+
+
+                displayAnalysis(
+                    result
+                );
+
+                try {
+
+                    const intelligenceResponse =
+                        await authenticatedFetch(
+                            `${API_URL}/api/career-intelligence/${encodeURIComponent(currentUser)}`
+                        );
+
+                    const intelligenceResult =
+                        await intelligenceResponse.json();
+
+                    if (
+                        !intelligenceResponse.ok ||
+                        !intelligenceResult.success
+                    ) {
+                        throw new Error(
+                            intelligenceResult.message ||
+                            "Career intelligence generation failed."
+                        );
+                    }
+
+                    showNotification(
+                        "Career intelligence generated automatically.",
+                        "success"
+                    );
+
+                } catch (intelligenceError) {
+
+                    console.error(
+                        "Automatic career intelligence error:",
+                        intelligenceError
+                    );
+
+                    showNotification(
+                        "Resume analyzed, but career intelligence could not be generated yet.",
+                        "error"
+                    );
+                }
+
+                // Day 32: reveal the optimizer immediately after analysis.
+                showResumeOptimizer();
+
+
+                fileStatus.textContent =
+                    "ANALYZED";
+
+                document.getElementById(
+                    "systemStatusText"
+                ).textContent =
+                    "RESUME INTELLIGENCE ONLINE";
+
+
+                setEngineState(
+                    [
+                        "engineParser",
+                        "engineSkills",
+                        "engineATS",
+                        "engineScore"
+                    ],
+                    "success"
+                );
+
+
+                showNotification(
+                    "Resume analysis completed successfully! 🚀",
+                    "success"
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Resume analysis error:",
+                    error
+                );
+
+                fileStatus.textContent =
+                    "ERROR";
+
+                document.getElementById(
+                    "systemStatusText"
+                ).textContent =
+                    "RESUME INTELLIGENCE ONLINE";
+
+
+                setEngineState(
+                    [
+                        "engineParser",
+                        "engineSkills",
+                        "engineATS",
+                        "engineScore"
+                    ],
+                    ""
+                );
+
+
+                showNotification(
+                    error.message ||
+                    "Unable to analyze resume.",
+                    "error"
+                );
+
+
+            } finally {
+
+                loading.classList.remove(
+                    "show"
+                );
+
+                analyzeButton.disabled =
+                    false;
+
+                analyzeButton.textContent =
+                    "ANALYZE RESUME →";
+            }
+        }
+
+
+        /* =====================================================
+           DISPLAY ANALYSIS
+        ===================================================== */
+
+        function displayAnalysis(data) {
+
+            const analysis =
+                data.analysis ||
+                data ||
+                {};
+
+            latestResumeAnalysis = analysis;
+            latestResumeFile =
+                data.resume_file ||
+                analysis.resume_file ||
+                latestResumeFile;
+
+            updateJobMatchButton();
+
+            results.classList.add(
+                "show"
+            );
+
+
+            const health =
+                analysis.resume_health ||
+                {};
+
+            const overall =
+                health.overall_resume ||
+                {};
+
+            const atsHealth =
+                health.ats_compatibility ||
+                {};
+
+            const contentHealth =
+                health.content_quality ||
+                {};
+
+            const skillsHealth =
+                health.skills_strength ||
+                {};
+
+            const achievementHealth =
+                health.achievement_strength ||
+                {};
+
+
+            setScore(
+                "strengthScore",
+                "strengthBar",
+                analysis.resume_strength_score,
+                "strengthLabel"
+            );
+
+            setScore(
+                "atsScore",
+                "atsBar",
+                analysis.ats_score,
+                "atsLabel"
+            );
+
+            setScore(
+                "contentScore",
+                "contentBar",
+                analysis.content_quality
+            );
+
+            setScore(
+                "skillsScore",
+                "skillsBar",
+                analysis.skills_strength
+            );
+
+            setScore(
+                "achievementScore",
+                "achievementBar",
+                analysis.achievement_strength
+            );
+
+
+            document.getElementById(
+                "strengthLabel"
+            ).textContent =
+                overall.label ||
+                getScoreLabel(
+                    analysis.resume_strength_score
+                );
+
+
+            document.getElementById(
+                "atsLabel"
+            ).textContent =
+                atsHealth.label ||
+                getScoreLabel(
+                    analysis.ats_score
+                );
+
+
+            document.getElementById(
+                "detectedName"
+            ).textContent =
+                analysis.name ||
+                analysis.detected_name ||
+                "Not detected";
+
+
+            document.getElementById(
+                "detectedEmail"
+            ).textContent =
+                analysis.email ||
+                "Not detected";
+
+
+            document.getElementById(
+                "detectedPhone"
+            ).textContent =
+                analysis.phone ||
+                "Not detected";
+
+
+            renderLink(
+                "detectedLinkedIn",
+                analysis.linkedin
+            );
+
+
+            renderLink(
+                "detectedGitHub",
+                analysis.github
+            );
+
+
+            renderHealth(
+                health
+            );
+
+            renderSections(
+                analysis.sections
+            );
+
+            renderSkills(
+                analysis.skills
+            );
+
+            renderKeywords(
+                analysis.keyword_coverage
+            );
+
+            renderAdvancedDiagnostics(
+                analysis
+            );
+
+            renderRoleKeywordCoverage(
+                analysis.role_keyword_coverage
+            );
+
+            renderSuggestions(
+                analysis.suggestions
+            );
+
+            renderWeaknesses(
+                analysis.weaknesses
+            );
+
+            renderRecommendations(
+                analysis.recommendations ||
+                analysis.smart_recommendations
+            );
+
+            renderActionPlan(
+                analysis.action_plan
+            );
+
+
+            document.getElementById(
+                "wordCount"
+            ).textContent =
+                Number(
+                    analysis.word_count || 0
+                ).toLocaleString();
+
+
+            document.getElementById(
+                "characterCount"
+            ).textContent =
+                Number(
+                    analysis.character_count || 0
+                ).toLocaleString();
+
+
+            document.getElementById(
+                "weaknessCount"
+            ).textContent =
+                Number(
+                    analysis.weakness_count || 0
+                );
+
+
+            document.getElementById(
+                "metricCount"
+            ).textContent =
+                Number(
+                    analysis.metric_count || 0
+                );
+
+
+            const insight =
+                document.getElementById(
+                    "copilotInsight"
+                );
+
+            const high =
+                Number(
+                    analysis.high_priority_count ||
+                    0
+                );
+
+            const coverage =
+                Number(
+                    analysis.keyword_coverage_score ||
+                    0
+                );
+
+
+            if (high > 0) {
+
+                insight.textContent =
+                    `Copilot detected ${high} high-priority improvement area${high === 1 ? "" : "s"}. Start with the action plan above, then improve your role-specific keyword coverage (${coverage}%).`;
+
+            } else if (
+                Number(
+                    analysis.ats_score || 0
+                ) >= 80
+            ) {
+
+                insight.textContent =
+                    "Your resume has strong ATS compatibility. Keep tailoring keywords and measurable achievements for each target role.";
+
+            } else {
+
+                insight.textContent =
+                    "Your resume has a usable foundation, but it can be improved through stronger keywords, measurable achievements and clearer evidence of impact.";
+            }
+
+
+            results.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
+
+
+        function renderLink(
+            id,
+            value
+        ) {
+
+            const container =
+                document.getElementById(id);
+
+            clearNode(container);
+
+
+            if (!value) {
+
+                container.textContent =
+                    "Not detected";
+
+                return;
+            }
+
+
+            const url =
+                value.startsWith("http")
+                    ? value
+                    : `https://${value}`;
+
+
+            const link =
+                document.createElement("a");
+
+            link.href =
+                url;
+
+            link.target =
+                "_blank";
+
+            link.rel =
+                "noopener noreferrer";
+
+            link.textContent =
+                value;
+
+            container.appendChild(
+                link
+            );
+        }
+
+
+        function renderHealth(health) {
+
+            const container =
+                document.getElementById(
+                    "healthList"
+                );
+
+            clearNode(container);
+
+
+            const rows = [
+
+                [
+                    "Overall Resume",
+                    health.overall_resume
+                ],
+
+                [
+                    "ATS Compatibility",
+                    health.ats_compatibility
+                ],
+
+                [
+                    "Content Quality",
+                    health.content_quality
+                ],
+
+                [
+                    "Skills Strength",
+                    health.skills_strength
+                ],
+
+                [
+                    "Achievement Strength",
+                    health.achievement_strength
+                ]
+
+            ];
+
+
+            rows.forEach(
+                ([name, data]) => {
+
+                    const score =
+                        Number(
+                            data?.score || 0
+                        );
+
+
+                    const row =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    row.innerHTML = `
+                        <div class="health-row-head">
+                            <span class="health-name"></span>
+                            <span class="health-score"></span>
+                        </div>
+
+                        <div class="health-bar">
+                            <div class="health-fill"></div>
+                        </div>
+                    `;
+
+
+                    row.querySelector(
+                        ".health-name"
+                    ).textContent =
+                        name;
+
+
+                    row.querySelector(
+                        ".health-score"
+                    ).textContent =
+                        `${score}/100`;
+
+
+                    row.querySelector(
+                        ".health-fill"
+                    ).style.width =
+                        `${Math.max(
+                            0,
+                            Math.min(
+                                100,
+                                score
+                            )
+                        )}%`;
+
+
+                    container.appendChild(
+                        row
+                    );
+                }
+            );
+        }
+
+
+        function renderSections(
+            sections
+        ) {
+
+            const container =
+                document.getElementById(
+                    "sectionList"
+                );
+
+            clearNode(container);
+
+
+            const list =
+                Array.isArray(sections)
+                    ? sections
+                    : [];
+
+
+            if (!list.length) {
+
+                container.appendChild(
+                    createEmptyMessage(
+                        "No resume sections detected."
+                    )
+                );
+
+                return;
+            }
+
+
+            list.forEach(
+                section => {
+
+                    const item =
+                        document.createElement(
+                            "div"
+                        );
+
+                    item.className =
+                        "section-item";
+
+                    item.textContent =
+                        section;
+
+                    container.appendChild(
+                        item
+                    );
+                }
+            );
+        }
+
+
+        function renderSkills(
+            skills
+        ) {
+
+            const container =
+                document.getElementById(
+                    "skillsContainer"
+                );
+
+            clearNode(container);
+
+
+            const list =
+                Array.isArray(skills)
+                    ? skills
+                    : [];
+
+
+            if (!list.length) {
+
+                container.appendChild(
+                    createEmptyMessage(
+                        "No technical skills detected."
+                    )
+                );
+
+                return;
+            }
+
+
+            list.forEach(
+                skill =>
+                    container.appendChild(
+                        createTag(skill)
+                    )
+            );
+        }
+
+
+        function renderKeywords(
+            keywordData
+        ) {
+
+            const data =
+                keywordData || {};
+
+
+            const matched =
+                Array.isArray(
+                    data.matched_keywords
+                )
+                    ? data.matched_keywords
+                    : [];
+
+
+            const missing =
+                Array.isArray(
+                    data.missing_keywords
+                )
+                    ? data.missing_keywords
+                    : [];
+
+
+            document.getElementById(
+                "keywordCoverageScore"
+            ).textContent =
+                `${Number(
+                    data.score || 0
+                )}%`;
+
+
+            const matchedContainer =
+                document.getElementById(
+                    "matchedKeywords"
+                );
+
+
+            const missingContainer =
+                document.getElementById(
+                    "missingKeywords"
+                );
+
+
+            clearNode(
+                matchedContainer
+            );
+
+            clearNode(
+                missingContainer
+            );
+
+
+            if (!matched.length) {
+
+                matchedContainer.appendChild(
+                    createEmptyMessage(
+                        "No matched keywords detected."
+                    )
+                );
+
+            } else {
+
+                matched
+                    .slice(0, 30)
+                    .forEach(
+                        keyword =>
+                            matchedContainer.appendChild(
+                                createTag(
+                                    keyword,
+                                    "keyword-tag"
+                                )
+                            )
+                    );
+            }
+
+
+            if (!missing.length) {
+
+                missingContainer.appendChild(
+                    createEmptyMessage(
+                        "No major missing keywords detected."
+                    )
+                );
+
+            } else {
+
+                missing
+                    .slice(0, 30)
+                    .forEach(
+                        keyword =>
+                            missingContainer.appendChild(
+                                createTag(
+                                    keyword,
+                                    "keyword-tag missing"
+                                )
+                            )
+                    );
+            }
+        }
+
+
+        /* =====================================================
+           ADVANCED DIAGNOSTICS
+        ===================================================== */
+
+        function renderSimpleDiagnosticList(
+            id,
+            values,
+            emptyText,
+            mode = ""
+        ) {
+
+            const container =
+                document.getElementById(id);
+
+            if (!container)
+                return;
+
+            clearNode(container);
+
+
+            const list =
+                Array.isArray(values)
+                    ? values
+                    : [];
+
+
+            if (!list.length) {
+
+                const item =
+                    createEmptyMessage(
+                        emptyText
+                    );
+
+                item.className =
+                    `diagnostic-item ${mode}`
+                    .trim();
+
+                container.appendChild(
+                    item
+                );
+
+                return;
+            }
+
+
+            list
+                .slice(0, 20)
+                .forEach(
+                    value => {
+
+                        const item =
+                            document.createElement(
+                                "div"
+                            );
+
+                        item.className =
+                            `diagnostic-item ${mode}`
+                            .trim();
+
+                        item.textContent =
+                            String(value);
+
+                        container.appendChild(
+                            item
+                        );
+                    }
+                );
+        }
+
+
+        function renderAdvancedDiagnostics(
+            analysis
+        ) {
+
+            renderSimpleDiagnosticList(
+                "missingSectionsList",
+                analysis.missing_sections,
+                "No recommended sections are missing.",
+                "good"
+            );
+
+
+            renderSimpleDiagnosticList(
+                "weakSectionsList",
+                analysis.weak_sections,
+                "No weak sections detected.",
+                "good"
+            );
+
+
+            renderSimpleDiagnosticList(
+                "weakVerbsList",
+                analysis.weak_action_verbs,
+                "No weak action verbs detected.",
+                "good"
+            );
+
+
+            renderSimpleDiagnosticList(
+                "genericDescriptionsList",
+                analysis.generic_descriptions,
+                "No generic phrases detected.",
+                "good"
+            );
+
+
+            renderSimpleDiagnosticList(
+                "metricsList",
+                analysis.metrics,
+                "No measurable metrics found.",
+                "missing"
+            );
+
+
+            const profile =
+                document.getElementById(
+                    "profileCompletenessList"
+                );
+
+            if (!profile)
+                return;
+
+            clearNode(profile);
+
+
+            [
+                [
+                    "LinkedIn",
+                    !analysis.missing_linkedin
+                ],
+
+                [
+                    "GitHub",
+                    !analysis.missing_github
+                ],
+
+                [
+                    "Achievements / Metrics",
+                    !analysis.missing_achievements
+                ]
+
+            ].forEach(
+                ([label, present]) => {
+
+                    const item =
+                        document.createElement(
+                            "div"
+                        );
+
+                    item.className =
+                        `diagnostic-item ${
+                            present
+                                ? "good"
+                                : "missing"
+                        }`;
+
+                    item.textContent =
+                        `${present ? "✓" : "⚠"} ${label}: ${
+                            present
+                                ? "Detected"
+                                : "Missing / needs improvement"
+                        }`;
+
+                    profile.appendChild(
+                        item
+                    );
+                }
+            );
+        }
+
+
+        function renderRoleKeywordCoverage(
+            roleData
+        ) {
+
+            const container =
+                document.getElementById(
+                    "roleKeywordCoverage"
+                );
+
+            if (!container)
+                return;
+
+            clearNode(container);
+
+
+            const data =
+                roleData &&
+                typeof roleData === "object"
+                    ? roleData
+                    : {};
+
+
+            const roles =
+                Object.entries(data);
+
+
+            if (!roles.length) {
+
+                container.appendChild(
+                    createEmptyMessage(
+                        "Role keyword coverage is not available."
+                    )
+                );
+
+                return;
+            }
+
+
+            roles.forEach(
+                ([role, details]) => {
+
+                    const score =
+                        Math.max(
+                            0,
+                            Math.min(
+                                100,
+                                Number(
+                                    details?.score
+                                ) || 0
+                            )
+                        );
+
+
+                    const row =
+                        document.createElement(
+                            "div"
+                        );
+
+                    row.className =
+                        "role-coverage-row";
+
+
+                    const head =
+                        document.createElement(
+                            "div"
+                        );
+
+                    head.className =
+                        "role-coverage-head";
+
+
+                    head.innerHTML = `
+                        <span></span>
+                        <span class="role-coverage-score"></span>
+                    `;
+
+
+                    head.children[0].textContent =
+                        role;
+
+                    head.children[1].textContent =
+                        `${score}%`;
+
+
+                    const bar =
+                        document.createElement(
+                            "div"
+                        );
+
+                    bar.className =
+                        "role-coverage-bar";
+
+
+                    const fill =
+                        document.createElement(
+                            "div"
+                        );
+
+                    fill.className =
+                        "role-coverage-fill";
+
+                    fill.style.width =
+                        `${score}%`;
+
+
+                    bar.appendChild(
+                        fill
+                    );
+
+
+                    row.appendChild(
+                        head
+                    );
+
+                    row.appendChild(
+                        bar
+                    );
+
+
+                    const mini =
+                        document.createElement(
+                            "div"
+                        );
+
+                    mini.className =
+                        "role-keyword-mini";
+
+
+                    (
+                        Array.isArray(
+                            details?.matched_keywords
+                        )
+                            ? details.matched_keywords
+                            : []
+                    )
+                    .slice(0, 8)
+                    .forEach(
+                        keyword => {
+
+                            const tag =
+                                document.createElement(
+                                    "span"
+                                );
+
+                            tag.className =
+                                "mini-keyword";
+
+                            tag.textContent =
+                                keyword;
+
+                            mini.appendChild(
+                                tag
+                            );
+                        }
+                    );
+
+
+                    (
+                        Array.isArray(
+                            details?.missing_keywords
+                        )
+                            ? details.missing_keywords
+                            : []
+                    )
+                    .slice(0, 6)
+                    .forEach(
+                        keyword => {
+
+                            const tag =
+                                document.createElement(
+                                    "span"
+                                );
+
+                            tag.className =
+                                "mini-keyword missing";
+
+                            tag.textContent =
+                                `Missing: ${keyword}`;
+
+                            mini.appendChild(
+                                tag
+                            );
+                        }
+                    );
+
+
+                    if (mini.children.length)
+                        row.appendChild(
+                            mini
+                        );
+
+
+                    container.appendChild(
+                        row
+                    );
+                }
+            );
+        }
+
+
+        function renderSuggestions(
+            suggestions
+        ) {
+
+            const container =
+                document.getElementById(
+                    "suggestionsList"
+                );
+
+            if (!container)
+                return;
+
+            clearNode(container);
+
+
+            const list =
+                Array.isArray(suggestions)
+                    ? suggestions
+                    : [];
+
+
+            if (!list.length) {
+
+                container.appendChild(
+                    createEmptyMessage(
+                        "No additional suggestions available."
+                    )
+                );
+
+                return;
+            }
+
+
+            list
+                .slice(0, 15)
+                .forEach(
+                    (
+                        suggestion,
+                        index
+                    ) => {
+
+                        const item =
+                            document.createElement(
+                                "div"
+                            );
+
+                        item.className =
+                            "diagnostic-item";
+
+                        item.textContent =
+                            `${index + 1}. ${suggestion}`;
+
+                        container.appendChild(
+                            item
+                        );
+                    }
+                );
+        }
+
+
+        function renderWeaknesses(
+            weaknesses
+        ) {
+
+            const container =
+                document.getElementById(
+                    "weaknessList"
+                );
+
+            clearNode(container);
+
+
+            const list =
+                Array.isArray(weaknesses)
+                    ? weaknesses
+                    : [];
+
+
+            if (!list.length) {
+
+                container.appendChild(
+                    createEmptyMessage(
+                        "No major weaknesses detected. Great work."
+                    )
+                );
+
+                return;
+            }
+
+
+            list
+                .slice(0, 12)
+                .forEach(
+                    item => {
+
+                        const card =
+                            document.createElement(
+                                "div"
+                            );
+
+                        card.className =
+                            "issue-item";
+
+
+                        const head =
+                            document.createElement(
+                                "div"
+                            );
+
+                        head.className =
+                            "issue-head";
+
+
+                        head.appendChild(
+                            createPriorityBadge(
+                                item.severity
+                            )
+                        );
+
+
+                        const title =
+                            document.createElement(
+                                "div"
+                            );
+
+                        title.className =
+                            "issue-title";
+
+                        title.textContent =
+                            item.section ||
+                            "Resume";
+
+
+                        head.appendChild(
+                            title
+                        );
+
+
+                        const message =
+                            document.createElement(
+                                "div"
+                            );
+
+                        message.className =
+                            "issue-message";
+
+                        message.textContent =
+                            item.message ||
+                            "Improvement area detected.";
+
+
+                        card.appendChild(
+                            head
+                        );
+
+                        card.appendChild(
+                            message
+                        );
+
+                        container.appendChild(
+                            card
+                        );
+                    }
+                );
+        }
+
+
+        function renderRecommendations(
+            recommendations
+        ) {
+
+            const container =
+                document.getElementById(
+                    "recommendationList"
+                );
+
+            clearNode(container);
+
+
+            const list =
+                Array.isArray(
+                    recommendations
+                )
+                    ? recommendations
+                    : [];
+
+
+            if (!list.length) {
+
+                container.appendChild(
+                    createEmptyMessage(
+                        "No additional recommendations available."
+                    )
+                );
+
+                return;
+            }
+
+
+            list
+                .slice(0, 12)
+                .forEach(
+                    item => {
+
+                        const card =
+                            document.createElement(
+                                "div"
+                            );
+
+                        card.className =
+                            "recommendation-item";
+
+
+                        const head =
+                            document.createElement(
+                                "div"
+                            );
+
+                        head.className =
+                            "recommendation-head";
+
+
+                        head.appendChild(
+                            createPriorityBadge(
+                                item.priority
+                            )
+                        );
+
+
+                        const title =
+                            document.createElement(
+                                "div"
+                            );
+
+                        title.className =
+                            "recommendation-title";
+
+                        title.textContent =
+                            item.title ||
+                            "Improve resume";
+
+
+                        head.appendChild(
+                            title
+                        );
+
+
+                        const description =
+                            document.createElement(
+                                "div"
+                            );
+
+                        description.className =
+                            "recommendation-description";
+
+                        description.textContent =
+                            item.description ||
+                            "";
+
+
+                        card.appendChild(
+                            head
+                        );
+
+                        card.appendChild(
+                            description
+                        );
+
+                        container.appendChild(
+                            card
+                        );
+                    }
+                );
+        }
+
+
+        function renderActionPlan(
+            actionPlan
+        ) {
+
+            const container =
+                document.getElementById(
+                    "actionPlanList"
+                );
+
+            clearNode(container);
+
+
+            const list =
+                Array.isArray(actionPlan)
+                    ? actionPlan
+                    : [];
+
+
+            if (!list.length) {
+
+                container.appendChild(
+                    createEmptyMessage(
+                        "No action plan generated."
+                    )
+                );
+
+                return;
+            }
+
+
+            list.forEach(
+                item => {
+
+                    const card =
+                        document.createElement(
+                            "div"
+                        );
+
+                    card.className =
+                        "action-item";
+
+
+                    const head =
+                        document.createElement(
+                            "div"
+                        );
+
+                    head.className =
+                        "action-head";
+
+
+                    const number =
+                        document.createElement(
+                            "span"
+                        );
+
+                    number.className =
+                        "priority-badge priority-low";
+
+                    number.textContent =
+                        `STEP ${item.step || ""}`;
+
+
+                    head.appendChild(
+                        number
+                    );
+
+
+                    const priority =
+                        createPriorityBadge(
+                            item.priority
+                        );
+
+                    head.appendChild(
+                        priority
+                    );
+
+
+                    const title =
+                        document.createElement(
+                            "div"
+                        );
+
+                    title.className =
+                        "action-title";
+
+                    title.textContent =
+                        item.action ||
+                        "Resume improvement";
+
+
+                    head.appendChild(
+                        title
+                    );
+
+
+                    const details =
+                        document.createElement(
+                            "div"
+                        );
+
+                    details.className =
+                        "action-details";
+
+                    details.textContent =
+                        item.details ||
+                        "";
+
+
+                    card.appendChild(
+                        head
+                    );
+
+                    card.appendChild(
+                        details
+                    );
+
+
+                    container.appendChild(
+                        card
+                    );
+                }
+            );
+        }
+
+
+        /* =====================================================
+           DAY 31 — JOB MATCHING
+        ===================================================== */
+        function setJobScore(valueId, barId, value) {
+            const score = Math.max(0, Math.min(100, Number(value) || 0));
+            const valueElement = document.getElementById(valueId);
+            const barElement = document.getElementById(barId);
+            if (valueElement) valueElement.textContent = `${score}%`;
+            if (barElement) barElement.style.width = `${score}%`;
+        }
+
+        function renderJobTags(id, values, className = "") {
+            const container = document.getElementById(id);
+            if (!container) return;
+            clearNode(container);
+            const list = Array.isArray(values) ? values : [];
+            if (!list.length) {
+                container.appendChild(createEmptyMessage("None detected."));
+                return;
+            }
+            list.slice(0, 30).forEach(value => {
+                const tag = createTag(String(value), `job-match-tag ${className}`.trim());
+                container.appendChild(tag);
+            });
+        }
+
+        function renderJobReasons(id, values, type) {
+            const container = document.getElementById(id);
+            if (!container) return;
+            clearNode(container);
+            const list = Array.isArray(values) ? values : [];
+            if (!list.length) {
+                const empty = createEmptyMessage("No additional insights.");
+                container.appendChild(empty);
+                return;
+            }
+            list.slice(0, 8).forEach(value => {
+                const item = document.createElement("div");
+                item.className = `job-reason ${type}`;
+                item.textContent = value;
+                container.appendChild(item);
+            });
+        }
+
+        function displayJobMatch(data) {
+            const scores = data.scores || {};
+            const analysis = data.analysis || {};
+            const skills = data.skills || {};
+            const keywords = data.keywords || {};
+
+            setJobScore("jobMatchScore", "jobMatchBar", scores.job_match_score);
+            setJobScore("jobSkillScore", "jobSkillBar", scores.skill_match);
+            setJobScore("jobKeywordScore", "jobKeywordBar", scores.keyword_match);
+            setJobScore("jobExperienceScore", "jobExperienceBar", scores.experience_match);
+
+            renderJobReasons("whyMatchList", analysis.why_you_match, "good");
+            renderJobReasons("whyDontList", analysis.why_you_dont, "bad");
+            renderJobTags("matchedJobSkills", skills.matched_skills);
+            renderJobTags("missingJobSkills", skills.missing_skills, "missing");
+            renderJobTags("matchedJobKeywords", keywords.matched_keywords);
+            renderJobTags("missingJobKeywords", keywords.missing_keywords, "missing");
+            renderJobTags("recommendedJobSkills", analysis.recommended_skills, "recommended");
+
+            jobMatchResults.classList.add("show");
+            document.getElementById("jobMatchStatus").textContent =
+                `${data.job_match?.level || "MATCH ANALYZED"} • READY`;
+        }
+
+        async function runJobMatch() {
+            const jobDescription = jobDescriptionInput.value.trim();
+
+            if (!latestResumeFile) {
+                showNotification("Analyze your resume first, then run Job Match.", "error");
+                return;
+            }
+
+            if (jobDescription.length < 30) {
+                showNotification("Please paste a fuller job description (at least 30 characters).", "error");
+                return;
+            }
+
+            jobMatchButton.disabled = true;
+            jobMatchButton.innerHTML = "🎯 ANALYZING<br>MATCH...";
+            document.getElementById("jobMatchStatus").textContent = "MATCHING IN PROGRESS";
+
+            try {
+                const response = await authenticatedFetch(`${API_URL}/api/job-match`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        username: currentUser,
+                        resume_file: latestResumeFile,
+                        job_description: jobDescription
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || "Job matching failed.");
+                }
+
+                console.log("FULL JOB MATCH API RESPONSE:", result);
+                displayJobMatch(result);
+                showNotification("ATS Job Match completed successfully! 🎯", "success");
+            } catch (error) {
+                console.error("Job matching error:", error);
+                document.getElementById("jobMatchStatus").textContent = "ENGINE READY";
+                showNotification(error.message || "Unable to analyze job match.", "error");
+            } finally {
+                jobMatchButton.disabled = false;
+                jobMatchButton.innerHTML = "🎯 ANALYZE<br>JOB MATCH";
+                updateJobMatchButton();
+            }
+        }
+
+        if (jobMatchButton) {
+            jobMatchButton.addEventListener("click", runJobMatch);
+        }
+
+        /* =====================================================
+           LATEST SAVED ANALYSIS
+        ===================================================== */
+
+        async function loadLatestAnalysis() {
+
+            try {
+
+                const response =
+                    await authenticatedFetch(
+                        `${API_URL}/api/resume/latest/${encodeURIComponent(
+                            currentUser
+                        )}`,
+                        {
+                            headers: {
+                                "Authorization":
+                                    `Bearer ${authToken}`
+                            }
+                        }
+                    );
+
+
+                const result =
+                    await response.json();
+
+
+                if (
+                    result.success &&
+                    result.has_analysis &&
+                    result.analysis
+                ) {
+
+                    const latest =
+                        result.analysis;
+
+                    latestResumeAnalysis = latest;
+                    latestResumeFile =
+                        latest.resume_file ||
+                        latest.resume_name ||
+                        latestResumeFile;
+
+
+                    const latestFile =
+                        latest.resume_file ||
+                        latest.resume_name;
+
+
+                    if (latestFile) {
+
+                        fileName.textContent =
+                            latestFile;
+
+                        fileStatus.textContent =
+                            "SAVED";
+
+                        fileMeta.textContent =
+                            "Latest saved analysis";
+
+                        fileInfo.classList.add(
+                            "show"
+                        );
+                    }
+
+
+                    if (
+                        latest.resume_health ||
+                        latest.weaknesses ||
+                        latest.keyword_coverage ||
+                        latest.role_keyword_coverage ||
+                        latest.recommendations ||
+                        latest.action_plan
+                    ) {
+
+                        displayAnalysis({
+                            analysis:
+                                latest
+                        });
+
+
+                        showNotification(
+                            "Latest saved resume analysis restored.",
+                            "success"
+                        );
+
+                    } else {
+
+                        showNotification(
+                            "Latest saved resume record found. Analyze a resume to load the full intelligence report.",
+                            "success"
+                        );
+                    }
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "Latest resume analysis error:",
+                    error
+                );
+            }
+        }
+
+
+        /* =====================================================
+           NAVIGATION
+        ===================================================== */
+
+        document
+            .getElementById(
+                "backDashboardButton"
+            )
+            .addEventListener(
+                "click",
+                () => {
+
+                    window.location.href =
+                        "dashboard.html";
+                }
+            );
+
+
+        /* =====================================================
+           INIT
+        ===================================================== */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            async () => {
+
+                enable3DHover();
+
+                await loadLatestAnalysis();
+            }
+        );
+
+
+        console.log(
+            "🤖 AI Career Copilot Resume UI connected to /api/resume/analyze + /api/job-match + /api/resume/optimize"
+        );
+
+        console.log(
+            "👤 User:",
+            currentUser
+        );
+
+        console.log(
+            "✨ Mouse-follow glow + 3D hover system enabled"
+        );
+
+    </script>
+
+</body>
+</html>

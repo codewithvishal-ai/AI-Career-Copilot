@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#eef3ef">
+    <title>Module 06 — Roadmap</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #1d3029;
+            --muted: #62726a;
+            --line: #d9e2dc;
+            --paper: #fff;
+            --canvas: #eef3ef;
+            --green: #245b47;
+            --green-dark: #173e31;
+            --blue: #2867c7;
+            --error: #a53a36;
+            --shadow: 0 18px 55px rgba(31, 57, 45, .08);
+        }
+        * { box-sizing: border-box; }
+        body {
+            min-width: 320px; min-height: 100vh; margin: 0; color: var(--ink);
+            background: radial-gradient(ellipse at 7% 0%, rgba(206, 224, 212, .72), transparent 34rem), linear-gradient(135deg, #f4f7f4, var(--canvas));
+            font-family: "DM Sans", sans-serif;
+        }
+        button, input, select, textarea { font: inherit; }
+        button { cursor: pointer; }
+        .shell { width: min(1420px, calc(100% - 48px)); margin: 0 auto; }
+        .topbar { height: 74px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(29, 48, 41, .12); }
+        .brand { display: flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; }
+        .brand-mark { width: 36px; height: 36px; display: grid; place-items: center; color: #fff; background: var(--green); border-radius: 8px; font: 800 14px "Manrope", sans-serif; }
+        .brand-name { font: 800 12px "Manrope", sans-serif; }
+        .brand-sub { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; }
+        .top-actions { display: flex; align-items: center; gap: 18px; }
+        .module-tag { color: var(--green); font-size: 11px; font-weight: 700; }
+        .back-link { color: var(--ink); text-decoration: none; font-size: 12px; font-weight: 600; }
+        .back-link:hover { color: var(--green); }
+        main { padding: 32px 0 48px; }
+        .intro { margin-bottom: 22px; }
+        .eyebrow { margin: 0 0 8px; color: var(--green); font-size: 10px; font-weight: 700; }
+        h1 { margin: 0; font: 800 clamp(28px, 4vw, 40px)/1.1 "Manrope", sans-serif; }
+        .intro-copy { max-width: 700px; margin: 9px 0 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+        .workspace { display: grid; grid-template-columns: minmax(250px, 310px) minmax(0, 1fr); align-items: stretch; gap: 18px; }
+        .panel { min-width: 0; overflow: hidden; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); }
+        .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 17px 18px; border-bottom: 1px solid var(--line); }
+        .panel-head h2 { margin: 0; font: 700 14px "Manrope", sans-serif; }
+        .panel-head p { margin: 5px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+        .brief-body { padding: 17px 18px 19px; }
+        .field { margin-bottom: 14px; }
+        label { display: block; margin: 0 0 6px; font-size: 11px; font-weight: 700; }
+        .optional { color: #89958e; font-weight: 400; }
+        input, select, textarea {
+            display: block; width: 100%; min-width: 0; padding: 10px 11px; color: var(--ink);
+            background: #fbfcfb; border: 1px solid #d6dfd9; border-radius: 5px; outline: none; font-size: 12px;
+        }
+        input, select { height: 40px; }
+        textarea { min-height: 86px; resize: vertical; line-height: 1.5; }
+        input:focus, select:focus, textarea:focus { border-color: #57836f; box-shadow: 0 0 0 3px rgba(36, 91, 71, .1); }
+        .hours-wrap { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 9px; }
+        .hours-suffix { color: var(--muted); font-size: 11px; }
+        .build-button { width: 100%; min-height: 42px; display: flex; align-items: center; justify-content: center; gap: 9px; padding: 0 14px; color: #fff; background: var(--green); border: 1px solid var(--green); border-radius: 5px; font-size: 12px; font-weight: 700; }
+        .build-button:hover:not(:disabled) { background: var(--green-dark); }
+        .build-button:disabled { cursor: wait; opacity: .6; }
+        .build-button svg, .send-button svg, .reset-button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .privacy-note { margin: 12px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+
+        .chat-panel { min-height: 690px; display: flex; flex-direction: column; }
+        .chat-heading { align-items: center; }
+        .chat-heading-copy { display: flex; align-items: center; gap: 10px; min-width: 0; }
+        .online-mark { width: 9px; height: 9px; flex: none; background: #34845f; border-radius: 50%; }
+        .chat-heading h2 { font: 700 14px "Manrope", sans-serif; }
+        .chat-heading p { font-size: 10px; }
+        .reset-button { width: 34px; height: 34px; display: grid; place-items: center; flex: none; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 5px; }
+        .reset-button:hover { color: var(--green); border-color: #8ca899; }
+        .chat-thread { flex: 1; min-height: 0; max-height: 590px; overflow-y: auto; padding: 22px clamp(16px, 3vw, 42px); scroll-behavior: smooth; }
+        .welcome { max-width: 540px; margin: 9vh auto 0; text-align: center; }
+        .welcome-mark { width: 44px; height: 44px; display: grid; place-items: center; margin: 0 auto 13px; color: var(--green); background: #edf5ef; border-radius: 12px; }
+        .welcome-mark svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+        .welcome h3 { margin: 0; font: 700 16px "Manrope", sans-serif; }
+        .welcome p { margin: 8px 0 17px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+        .quick-prompts { display: flex; flex-wrap: wrap; justify-content: center; gap: 7px; }
+        .quick-prompt { padding: 8px 10px; color: #315443; background: #f5f8f5; border: 1px solid #dce7df; border-radius: 5px; font-size: 10px; }
+        .quick-prompt:hover { background: #eaf2ec; border-color: #a8c0af; }
+        .message { display: flex; align-items: flex-start; gap: 9px; max-width: 800px; margin: 0 auto 18px; }
+        .message.user { justify-content: flex-end; }
+        .message-avatar { width: 28px; height: 28px; display: grid; place-items: center; flex: none; color: var(--green); background: #edf5ef; border-radius: 50%; font-size: 10px; font-weight: 700; }
+        .message-content { max-width: min(740px, calc(100% - 44px)); padding: 11px 14px; color: #2b3931; background: #f4f7f4; border: 1px solid #e4eae5; border-radius: 8px; font-size: 12px; line-height: 1.65; overflow-wrap: anywhere; }
+        .message.user .message-content { color: #173e31; background: #eaf3ed; border-color: #d7e7dc; }
+        .message-content h2, .message-content h3 { margin: 13px 0 5px; color: var(--ink); font: 700 13px "Manrope", sans-serif; }
+        .message-content h2:first-child, .message-content h3:first-child { margin-top: 0; }
+        .message-content p { margin: 5px 0; }
+        .message-content ul { margin: 4px 0 8px; padding-left: 19px; }
+        .message-content li { margin: 3px 0; }
+        .message-content strong { color: #202d25; }
+        .roadmap-flow {
+            max-width: 800px;
+            margin: 4px auto 22px;
+            padding: 17px;
+            background: #f8faf8;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+        }
+        .roadmap-flow-head { margin-bottom: 14px; }
+        .roadmap-flow-head h3 { margin: 0; font: 700 14px "Manrope", sans-serif; }
+        .roadmap-flow-head p { margin: 5px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+        .roadmap-phase { position: relative; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; padding-bottom: 13px; }
+        .roadmap-phase:not(:last-child)::after { position: absolute; top: 34px; bottom: 0; left: 15px; width: 2px; content: ""; background: #cbded0; }
+        .roadmap-phase-node { position: relative; z-index: 1; width: 32px; height: 32px; display: grid; place-items: center; color: #fff; background: var(--green); border: 3px solid #e2eee5; border-radius: 50%; font-size: 10px; font-weight: 700; }
+        .roadmap-phase-body { min-width: 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 6px; }
+        .roadmap-phase-meta { color: var(--green); font-size: 9px; font-weight: 700; }
+        .roadmap-phase-title { margin: 4px 0 5px; font: 700 12px/1.4 "Manrope", sans-serif; }
+        .roadmap-phase-goal { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+        .roadmap-phase-section { margin-top: 9px; }
+        .roadmap-phase-label { display: block; margin-bottom: 3px; color: #334c3e; font-size: 9px; font-weight: 700; }
+        .roadmap-phase-list { margin: 0; padding-left: 16px; color: #53645a; font-size: 10px; line-height: 1.5; }
+        .roadmap-phase-list li { margin: 2px 0; }
+        .typing { display: flex; gap: 4px; padding: 6px 2px; }
+        .typing span { width: 5px; height: 5px; background: #71857a; border-radius: 50%; animation: pulse 1s infinite alternate; }
+        .typing span:nth-child(2) { animation-delay: .2s; }
+        .typing span:nth-child(3) { animation-delay: .4s; }
+        @keyframes pulse { to { opacity: .3; transform: translateY(-2px); } }
+        .chat-status { min-height: 16px; padding: 0 18px 7px; color: var(--muted); font-size: 10px; }
+        .chat-status.error { color: var(--error); }
+        .composer-wrap { padding: 0 18px 16px; }
+        .composer { display: flex; align-items: flex-end; gap: 8px; padding: 8px; background: #fff; border: 1px solid #cedbd2; border-radius: 8px; box-shadow: 0 2px 8px rgba(31, 57, 45, .04); }
+        .composer:focus-within { border-color: #57836f; box-shadow: 0 0 0 3px rgba(36, 91, 71, .09); }
+        .composer textarea { min-height: 42px; max-height: 130px; padding: 9px 8px; background: transparent; border: 0; box-shadow: none; resize: none; font-size: 12px; }
+        .composer textarea:focus { border: 0; box-shadow: none; }
+        .send-button { width: 38px; height: 38px; display: grid; place-items: center; flex: none; color: #fff; background: var(--green); border: 0; border-radius: 6px; }
+        .send-button:hover:not(:disabled) { background: var(--green-dark); }
+        .send-button:disabled { cursor: wait; opacity: .55; }
+        .composer-note { margin: 7px 2px 0; color: #7b8980; font-size: 9px; text-align: center; }
+
+        @media (max-width: 900px) {
+            .workspace { grid-template-columns: minmax(0, 1fr); }
+            .chat-panel { min-height: 640px; }
+            .chat-thread { max-height: 520px; }
+            .welcome { margin-top: 5vh; }
+        }
+        @media (max-width: 560px) {
+            .shell { width: min(100% - 28px, 1420px); }
+            .topbar { height: 64px; }
+            .top-actions { gap: 10px; }
+            .module-tag { display: none; }
+            main { padding-top: 24px; }
+            .chat-panel { min-height: 610px; }
+            .chat-thread { padding: 18px 12px; }
+            .message-content { max-width: calc(100% - 37px); padding: 10px 11px; }
+            .composer-wrap { padding: 0 12px 13px; }
+            .welcome { margin-top: 4vh; }
+            .quick-prompts { gap: 6px; }
+        }
+    </style>
+<script src="config.js"></script>
+</head>
+<body>
+    <header class="topbar shell">
+        <a class="brand" href="dashboard.html" aria-label="Career Copilot dashboard">
+            <span class="brand-mark">CC</span>
+            <span><span class="brand-name">CAREER COPILOT</span><span class="brand-sub">CAREER DEVELOPMENT WORKSPACE</span></span>
+        </a>
+        <div class="top-actions">
+            <span class="module-tag">MODULE 06</span>
+            <a class="back-link" href="dashboard.html">Dashboard</a>
+        </div>
+    </header>
+
+    <main class="shell">
+        <section class="intro">
+            <p class="eyebrow">MODULE 06 / ROADMAP</p>
+            <h1>Roadmap</h1>
+            <p class="intro-copy">Build a realistic path to your target role, then refine it in conversation as your priorities change.</p>
+        </section>
+
+        <div class="workspace">
+            <aside class="panel" aria-labelledby="briefTitle">
+                <div class="panel-head">
+                    <div><h2 id="briefTitle">Roadmap brief</h2><p>Set the constraints for your plan.</p></div>
+                </div>
+                <div class="brief-body">
+                    <div class="field">
+                        <label for="goal">Target role *</label>
+                        <input id="goal" maxlength="180" placeholder="e.g. Data Analyst" autocomplete="organization-title">
+                    </div>
+                    <div class="field">
+                        <label for="experienceLevel">Current experience</label>
+                        <select id="experienceLevel">
+                            <option>New to the field</option>
+                            <option>Some experience</option>
+                            <option>Experienced</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="weeklyHours">Time available</label>
+                        <div class="hours-wrap">
+                            <input id="weeklyHours" type="number" min="1" max="60" step="1" value="6">
+                            <span class="hours-suffix">hours per week</span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="timeline">Target timeline</label>
+                        <select id="timeline">
+                            <option>3 months</option>
+                            <option selected>6 months</option>
+                            <option>9 months</option>
+                            <option>12 months</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="constraints">Constraints <span class="optional">(optional)</span></label>
+                        <textarea id="constraints" maxlength="1000" placeholder="Budget, schedule, preferred learning style, or tools you already use"></textarea>
+                    </div>
+                    <button class="build-button" id="buildButton" type="button">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18"></path></svg>
+                        Build my roadmap
+                    </button>
+                    <p class="privacy-note">Your brief and chat are sent to Gemini for this response and are not saved by this module.</p>
+                </div>
+            </aside>
+
+            <section class="panel chat-panel" aria-labelledby="chatTitle">
+                <div class="panel-head chat-heading">
+                    <div class="chat-heading-copy">
+                        <span class="online-mark" aria-hidden="true"></span>
+                        <div><h2 id="chatTitle">Roadmap coach</h2><p>Gemini career planning</p></div>
+                    </div>
+                    <button class="reset-button" id="newChatButton" type="button" title="Start a new chat" aria-label="Start a new chat">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+                    </button>
+                </div>
+                <div class="chat-thread" id="chatThread" aria-live="polite" aria-relevant="additions text">
+                    <div class="welcome" id="welcome">
+                        <span class="welcome-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"></path><path d="M8 9h8M8 12h5"></path></svg></span>
+                        <h3>Plan your next career move</h3>
+                        <p>Choose a target role and build a practical sequence of skills, projects, and checkpoints. You can ask the coach to adjust any phase.</p>
+                        <div class="quick-prompts">
+                            <button class="quick-prompt" type="button" data-prompt="Create my roadmap with phases, projects, and checkpoints.">Create my roadmap</button>
+                            <button class="quick-prompt" type="button" data-prompt="Help me choose the first skill to focus on.">Choose a first skill</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-status" id="chatStatus" role="status" aria-live="polite"></div>
+                <div class="composer-wrap">
+                    <form class="composer" id="chatForm">
+                        <textarea id="messageInput" rows="1" maxlength="3000" placeholder="Ask to adjust your plan..." aria-label="Message the roadmap coach"></textarea>
+                        <button class="send-button" id="sendButton" type="submit" title="Send message" aria-label="Send message">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 14-7-5 14-3-6z"></path><path d="m11 13 4-5"></path></svg>
+                        </button>
+                    </form>
+                    <p class="composer-note">Roadmap suggestions are guidance, not a guarantee of employment.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        const API_URL = window.CAREER_COPILOT_API_URL;
+        const TOKEN_STORAGE_KEY = "careerCopilotToken";
+        const goalInput = document.getElementById("goal");
+        const experienceLevelInput = document.getElementById("experienceLevel");
+        const weeklyHoursInput = document.getElementById("weeklyHours");
+        const timelineInput = document.getElementById("timeline");
+        const constraintsInput = document.getElementById("constraints");
+        const chatThread = document.getElementById("chatThread");
+        const welcome = document.getElementById("welcome");
+        const chatForm = document.getElementById("chatForm");
+        const messageInput = document.getElementById("messageInput");
+        const sendButton = document.getElementById("sendButton");
+        const buildButton = document.getElementById("buildButton");
+        const newChatButton = document.getElementById("newChatButton");
+        const chatStatus = document.getElementById("chatStatus");
+        const history = [];
+        let busy = false;
+
+        function appendInlineText(parent, text) {
+            text.split(/(\*\*[^*]+\*\*)/g).forEach((part) => {
+                if (part.startsWith("**") && part.endsWith("**")) {
+                    const strong = document.createElement("strong");
+                    strong.textContent = part.slice(2, -2);
+                    parent.append(strong);
+                } else if (part) {
+                    parent.append(document.createTextNode(part));
+                }
+            });
+        }
+
+        function renderAssistantText(container, text) {
+            let list = null;
+            text.split(/\r?\n/).forEach((line) => {
+                const trimmed = line.trim();
+                if (!trimmed) {
+                    list = null;
+                    return;
+                }
+                const heading = trimmed.match(/^(#{1,3})\s+(.+)$/);
+                if (heading) {
+                    list = null;
+                    const element = document.createElement(heading[1].length === 1 ? "h2" : "h3");
+                    appendInlineText(element, heading[2]);
+                    container.append(element);
+                    return;
+                }
+                const bullet = trimmed.match(/^[-*]\s+(.+)$/);
+                if (bullet) {
+                    if (!list) {
+                        list = document.createElement("ul");
+                        container.append(list);
+                    }
+                    const item = document.createElement("li");
+                    appendInlineText(item, bullet[1]);
+                    list.append(item);
+                    return;
+                }
+                list = null;
+                const paragraph = document.createElement("p");
+                appendInlineText(paragraph, trimmed);
+                container.append(paragraph);
+            });
+        }
+
+        function addMessage(role, text) {
+            const row = document.createElement("article");
+            row.className = `message ${role}`;
+            const content = document.createElement("div");
+            content.className = "message-content";
+            if (role === "assistant") {
+                const avatar = document.createElement("span");
+                avatar.className = "message-avatar";
+                avatar.setAttribute("aria-hidden", "true");
+                avatar.textContent = "R";
+                row.append(avatar);
+                renderAssistantText(content, text);
+            } else {
+                content.textContent = text;
+            }
+            row.append(content);
+            chatThread.append(row);
+            chatThread.scrollTop = chatThread.scrollHeight;
+        }
+
+        function appendRoadmapFlow(plan) {
+            chatThread.querySelector(".roadmap-flow")?.remove();
+
+            const flow = document.createElement("section");
+            flow.className = "roadmap-flow";
+            flow.setAttribute("aria-label", "Generated roadmap flowchart");
+
+            const header = document.createElement("div");
+            header.className = "roadmap-flow-head";
+            const title = document.createElement("h3");
+            title.textContent = `${plan.target_role} learning path`;
+            const details = document.createElement("p");
+            details.textContent = `${plan.timeline} · ${plan.total_weeks} weeks · ${plan.weekly_hours} hours per week`;
+            header.append(title, details);
+            flow.append(header);
+
+            plan.phases.forEach((phase, index) => {
+                const row = document.createElement("article");
+                row.className = "roadmap-phase";
+                const node = document.createElement("span");
+                node.className = "roadmap-phase-node";
+                node.setAttribute("aria-hidden", "true");
+                node.textContent = String(phase.step || index + 1);
+
+                const body = document.createElement("div");
+                body.className = "roadmap-phase-body";
+                const meta = document.createElement("div");
+                meta.className = "roadmap-phase-meta";
+                meta.textContent = `WEEKS ${phase.week_start}–${phase.week_end}`;
+                const phaseTitle = document.createElement("h4");
+                phaseTitle.className = "roadmap-phase-title";
+                phaseTitle.textContent = phase.title;
+                const goal = document.createElement("p");
+                goal.className = "roadmap-phase-goal";
+                goal.textContent = phase.goal;
+                body.append(meta, phaseTitle, goal);
+
+                const appendSection = (label, values) => {
+                    if (!Array.isArray(values) || !values.length) return;
+                    const section = document.createElement("div");
+                    section.className = "roadmap-phase-section";
+                    const sectionLabel = document.createElement("span");
+                    sectionLabel.className = "roadmap-phase-label";
+                    sectionLabel.textContent = label;
+                    const list = document.createElement("ul");
+                    list.className = "roadmap-phase-list";
+                    values.forEach(value => {
+                        const item = document.createElement("li");
+                        item.textContent = value;
+                        list.append(item);
+                    });
+                    section.append(sectionLabel, list);
+                    body.append(section);
+                };
+
+                appendSection("FOCUS TOPICS", phase.topics);
+                appendSection("PRACTICE ACTIONS", phase.actions);
+                appendSection("PROJECT", [phase.project]);
+                appendSection("CHECKPOINT", [phase.checkpoint]);
+                row.append(node, body);
+                flow.append(row);
+            });
+
+            chatThread.append(flow);
+            chatThread.scrollTop = chatThread.scrollHeight;
+        }
+
+        function roadmapHistoryText(plan) {
+            return plan.phases.map(phase =>
+                `Phase ${phase.step}, weeks ${phase.week_start}-${phase.week_end}: ${phase.title}. Goal: ${phase.goal}. Topics: ${phase.topics.join(", ")}. Actions: ${phase.actions.join("; ")}. Project: ${phase.project}. Checkpoint: ${phase.checkpoint}.`
+            ).join("\n\n").slice(0, 10000);
+        }
+
+        function showTyping() {
+            const row = document.createElement("article");
+            row.className = "message assistant";
+            row.id = "typingMessage";
+            row.setAttribute("aria-label", "Roadmap coach is responding");
+            row.innerHTML = '<span class="message-avatar" aria-hidden="true">R</span><div class="message-content"><div class="typing" aria-hidden="true"><span></span><span></span><span></span></div></div>';
+            chatThread.append(row);
+            chatThread.scrollTop = chatThread.scrollHeight;
+        }
+
+        function clearTyping() {
+            document.getElementById("typingMessage")?.remove();
+        }
+
+        function addRoadmapList(parent, label, values) {
+            if (!Array.isArray(values) || !values.length) return;
+            const section = document.createElement("div");
+            section.className = "roadmap-phase-section";
+            const heading = document.createElement("span");
+            heading.className = "roadmap-phase-label";
+            heading.textContent = label;
+            const list = document.createElement("ul");
+            list.className = "roadmap-phase-list";
+            values.forEach(value => {
+                const item = document.createElement("li");
+                item.textContent = value;
+                list.append(item);
+            });
+            section.append(heading, list);
+            parent.append(section);
+        }
+
+        function renderRoadmapFlow(plan) {
+            chatThread.querySelector(".roadmap-flow")?.remove();
+            const flow = document.createElement("section");
+            flow.className = "roadmap-flow";
+            flow.setAttribute("aria-label", "Structured roadmap flowchart");
+
+            const header = document.createElement("div");
+            header.className = "roadmap-flow-head";
+            const heading = document.createElement("h3");
+            heading.textContent = `${plan.target_role} roadmap`;
+            const summary = document.createElement("p");
+            summary.textContent = `${plan.timeline} · ${plan.total_weeks} weeks · ${plan.weekly_hours} hours per week`;
+            header.append(heading, summary);
+            flow.append(header);
+
+            plan.phases.forEach((phase, index) => {
+                const row = document.createElement("article");
+                row.className = "roadmap-phase";
+                const node = document.createElement("span");
+                node.className = "roadmap-phase-node";
+                node.setAttribute("aria-hidden", "true");
+                node.textContent = String(phase.step || index + 1);
+
+                const body = document.createElement("div");
+                body.className = "roadmap-phase-body";
+                const range = document.createElement("div");
+                range.className = "roadmap-phase-meta";
+                range.textContent = `WEEKS ${phase.week_start}-${phase.week_end}`;
+                const title = document.createElement("h4");
+                title.className = "roadmap-phase-title";
+                title.textContent = phase.title;
+                const goal = document.createElement("p");
+                goal.className = "roadmap-phase-goal";
+                goal.textContent = phase.goal;
+                body.append(range, title, goal);
+                addRoadmapList(body, "TOPICS", phase.topics);
+                addRoadmapList(body, "PRACTICAL ACTIONS", phase.actions);
+                addRoadmapList(body, "PROJECT", [phase.project]);
+                addRoadmapList(body, "CHECKPOINT", [phase.checkpoint]);
+                row.append(node, body);
+                flow.append(row);
+            });
+
+            chatThread.append(flow);
+            chatThread.scrollTop = chatThread.scrollHeight;
+        }
+
+        function roadmapPlanContext(plan) {
+            const phaseNotes = plan.phases.map(phase =>
+                `Phase ${phase.step}, weeks ${phase.week_start}-${phase.week_end}: ${phase.title}. Goal: ${phase.goal}. Topics: ${phase.topics.join(", ")}. Actions: ${phase.actions.join("; ")}. Project: ${phase.project}. Checkpoint: ${phase.checkpoint}.`
+            );
+            return `${plan.overview}\n${phaseNotes.join("\n\n")}`.slice(0, 10000);
+        }
+
+        async function sendMessage(message = messageInput.value.trim()) {
+            if (busy) return;
+            const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+            if (!token) {
+                chatStatus.textContent = "Please sign in from the dashboard before building a roadmap.";
+                chatStatus.classList.add("error");
+                return;
+            }
+            const goal = goalInput.value.trim();
+            if (!goal) {
+                chatStatus.textContent = "Enter a target role before sending your message.";
+                chatStatus.classList.add("error");
+                goalInput.focus();
+                return;
+            }
+            if (!message) return;
+
+            const brief = {
+                goal,
+                experience_level: experienceLevelInput.value,
+                weekly_hours: Number(weeklyHoursInput.value),
+                timeline: timelineInput.value,
+                constraints: constraintsInput.value.trim(),
+                message,
+                history: history.slice(-12)
+            };
+
+            busy = true;
+            sendButton.disabled = true;
+            buildButton.disabled = true;
+            chatStatus.classList.remove("error");
+            chatStatus.textContent = "Roadmap coach is thinking...";
+            welcome.hidden = true;
+            addMessage("user", message);
+            messageInput.value = "";
+            showTyping();
+
+            try {
+                const response = await fetch(`${API_URL}/api/roadmap/chat`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(brief)
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || "Roadmap generation failed.");
+                }
+                history.push(
+                    { role: "user", content: message },
+                    { role: "assistant", content: result.reply }
+                );
+                addMessage("assistant", result.reply);
+                chatStatus.textContent = "Roadmap updated. Refine any phase in chat.";
+            } catch (error) {
+                chatStatus.textContent = error.message || "Unable to reach the roadmap service.";
+                chatStatus.classList.add("error");
+            } finally {
+                clearTyping();
+                busy = false;
+                sendButton.disabled = false;
+                buildButton.disabled = false;
+                messageInput.focus();
+            }
+        }
+
+        async function generateRoadmap() {
+            if (busy) return;
+            const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+            if (!token) {
+                chatStatus.textContent = "Please sign in from the dashboard before building a roadmap.";
+                chatStatus.classList.add("error");
+                return;
+            }
+
+            const goal = goalInput.value.trim();
+            if (!goal) {
+                chatStatus.textContent = "Enter a target role before building your roadmap.";
+                chatStatus.classList.add("error");
+                goalInput.focus();
+                return;
+            }
+
+            const prompt = `Build a structured ${timelineInput.value} roadmap for ${goal}.`;
+            const brief = {
+                goal,
+                experience_level: experienceLevelInput.value,
+                weekly_hours: Number(weeklyHoursInput.value),
+                timeline: timelineInput.value,
+                constraints: constraintsInput.value.trim()
+            };
+
+            busy = true;
+            sendButton.disabled = true;
+            buildButton.disabled = true;
+            welcome.hidden = true;
+            chatStatus.classList.remove("error");
+            chatStatus.textContent = "Building ordered phases and checkpoints...";
+            addMessage("user", prompt);
+            showTyping();
+
+            try {
+                const response = await fetch(`${API_URL}/api/roadmap/generate`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(brief)
+                });
+                const result = await response.json();
+                if (response.status === 401) {
+                    localStorage.removeItem("careerCopilotUser");
+                    localStorage.removeItem(TOKEN_STORAGE_KEY);
+                    localStorage.removeItem("careerCopilotLoggedIn");
+                    window.location.replace("index.html");
+                    return;
+                }
+                if (!response.ok || !result.success || !Array.isArray(result.phases)) {
+                    throw new Error(result.message || "Roadmap generation failed.");
+                }
+
+                const context = roadmapHistoryText(result);
+                history.push(
+                    { role: "user", content: prompt },
+                    { role: "assistant", content: context }
+                );
+                addMessage("assistant", result.overview || `Your ${result.target_role} roadmap is ready. Follow each phase in order.`);
+                appendRoadmapFlow(result);
+                chatStatus.textContent = "Roadmap ready. Ask the coach to adjust a phase or clarify a checkpoint.";
+            } catch (error) {
+                chatStatus.textContent = error.message || "Unable to reach the roadmap planner.";
+                chatStatus.classList.add("error");
+            } finally {
+                clearTyping();
+                busy = false;
+                sendButton.disabled = false;
+                buildButton.disabled = false;
+            }
+        }
+
+        async function generateRoadmap() {
+            if (busy) return;
+            const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+            if (!token) {
+                chatStatus.textContent = "Please sign in from the dashboard before building a roadmap.";
+                chatStatus.classList.add("error");
+                return;
+            }
+
+            const goal = goalInput.value.trim();
+            if (!goal) {
+                chatStatus.textContent = "Enter a target role before building your roadmap.";
+                chatStatus.classList.add("error");
+                goalInput.focus();
+                return;
+            }
+
+            const prompt = `Build my ${timelineInput.value} roadmap for ${goal}.`;
+            const brief = {
+                goal,
+                experience_level: experienceLevelInput.value,
+                weekly_hours: Number(weeklyHoursInput.value),
+                timeline: timelineInput.value,
+                constraints: constraintsInput.value.trim()
+            };
+
+            busy = true;
+            sendButton.disabled = true;
+            buildButton.disabled = true;
+            chatStatus.classList.remove("error");
+            chatStatus.textContent = "Building ordered phases and checkpoints...";
+            welcome.hidden = true;
+            addMessage("user", prompt);
+            showTyping();
+
+            try {
+                const response = await fetch(`${API_URL}/api/roadmap/generate`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(brief)
+                });
+                const result = await response.json();
+                if (response.status === 401) {
+                    localStorage.removeItem("careerCopilotUser");
+                    localStorage.removeItem(TOKEN_STORAGE_KEY);
+                    localStorage.removeItem("careerCopilotLoggedIn");
+                    window.location.replace("index.html");
+                    return;
+                }
+                if (!response.ok || !result.success || !Array.isArray(result.phases)) {
+                    throw new Error(result.message || "Roadmap generation failed.");
+                }
+
+                history.push(
+                    { role: "user", content: prompt },
+                    { role: "assistant", content: roadmapPlanContext(result) }
+                );
+                addMessage("assistant", result.overview || `Your ${result.target_role} roadmap is ready. Follow each phase in order.`);
+                renderRoadmapFlow(result);
+                chatStatus.textContent = result.source === "role_template"
+                    ? "A role-based roadmap is ready; AI refinement is temporarily unavailable."
+                    : "Roadmap ready. Ask the coach to adjust a phase or clarify a checkpoint.";
+            } catch (error) {
+                chatStatus.textContent = error.message || "Unable to reach the roadmap planner.";
+                chatStatus.classList.add("error");
+            } finally {
+                clearTyping();
+                busy = false;
+                sendButton.disabled = false;
+                buildButton.disabled = false;
+            }
+        }
+
+        chatForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+            sendMessage();
+        });
+        buildButton.addEventListener("click", generateRoadmap);
+        newChatButton.addEventListener("click", () => {
+            history.length = 0;
+            chatThread.replaceChildren(welcome);
+            welcome.hidden = false;
+            chatStatus.textContent = "New roadmap chat ready.";
+            chatStatus.classList.remove("error");
+            messageInput.value = "";
+            goalInput.focus();
+        });
+        document.querySelectorAll(".quick-prompt").forEach((button) => {
+            button.addEventListener("click", () => {
+                if (button.dataset.prompt.startsWith("Create my roadmap")) {
+                    generateRoadmap();
+                } else {
+                    sendMessage(button.dataset.prompt);
+                }
+            });
+        });
+        messageInput.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                chatForm.requestSubmit();
+            }
+        });
+        messageInput.addEventListener("input", () => {
+            messageInput.style.height = "auto";
+            messageInput.style.height = `${Math.min(messageInput.scrollHeight, 130)}px`;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "ai-career-copilot-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Frontend for AI Career Copilot",
+  "scripts": {
+    "dev": "python -m http.server 5500",
+    "open": "start \"\" msedge http://localhost:5500/index.html"
+  }
+}
